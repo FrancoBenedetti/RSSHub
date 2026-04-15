@@ -3,7 +3,10 @@ services:
         # two ways to enable puppeteer:
         # * comment out marked lines, then use this image instead: diygod/rsshub:chromium-bundled
         # * (consumes more disk space and memory) leave everything unchanged
-        image: diygod/rsshub # or ghcr.io/diygod/rsshub
+        # image: diygod/rsshub # or ghcr.io/diygod/rsshub
+        build:
+            context: .
+            dockerfile: Dockerfile
         restart: always
         ports:
             - '1200:1200'
@@ -21,14 +24,18 @@ services:
             - redis
             - browserless # marked
 
-    browserless: # marked
+    browserless:
+        # marked
         image: browserless/chrome # marked
         restart: always # marked
-        ulimits: # marked
-            core: # marked
+        ulimits:
+            # marked
+            core:
+                # marked
                 hard: 0 # marked
                 soft: 0 # marked
-        healthcheck: # marked
+        healthcheck:
+            # marked
             test: ['CMD', 'curl', '-f', 'http://localhost:3000/pressure'] # marked
             interval: 30s # marked
             timeout: 10s # marked
