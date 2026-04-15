@@ -1,0 +1,96 @@
+
+> rsshub@1.0.0 dev /home/franco/Projects/RSSHub
+> cross-env NODE_ENV=dev NODE_OPTIONS='--max-http-header-size=32768' tsx watch --inspect --clear-screen=false lib/index.ts
+
+Debugger listening on ws://127.0.0.1:9229/ff7aa487-fb6b-4e3d-a8e5-81e7aa1c4d90
+For help, see: https://nodejs.org/en/docs/inspector
+(node:995272) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 5s
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 9ms
+1:12:29 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/ca3ba28e-c752-4889-a7ec-3d325b4ac5cf
+For help, see: https://nodejs.org/en/docs/inspector
+1:12:35 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/73d8402d-fc53-47dd-b2ae-e39b4e350966
+For help, see: https://nodejs.org/en/docs/inspector
+(node:995956) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
+1:13:35 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/1e71b9d6-ff68-4609-b0b2-fbe8a122dbff
+For help, see: https://nodejs.org/en/docs/inspector
+(node:996100) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
+1:14:20 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/59587710-994b-40f8-872a-ad098ba32960
+For help, see: https://nodejs.org/en/docs/inspector
+(node:996226) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
+1:15:03 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/e37ce403-7b33-4a5f-9d8c-052958263d4f
+For help, see: https://nodejs.org/en/docs/inspector
+(node:996362) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
+[32minfo[39m: <-- GET /maroelamedia
+[32minfo[39m: --> GET /maroelamedia [32m200[0m 3s
+[32minfo[39m: <-- GET /favicon.ico
+[32minfo[39m: --> GET /favicon.ico [32m200[0m 3ms
+[32minfo[39m: <-- GET /maroelamedia/nuus
+[32minfo[39m: --> GET /maroelamedia/nuus [32m200[0m 3s
+[32minfo[39m: <-- GET /maroelamedia/vermaak
+[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 8s
