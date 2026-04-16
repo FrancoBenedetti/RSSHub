@@ -26,7 +26,7 @@
         }
     },
     "scripts": {
-        "build": "npm run build:routes && tsdown",
+        "build": "npm run build:routes && npm run build:index && tsdown",
         "build:docs": "npm run build:routes && tsx scripts/workflow/build-docs.ts",
         "build:index": "cross-env NODE_ENV=dev tsx scripts/build-route-index.ts",
         "build:lib": "npm run build:routes && tsdown --config ./tsdown-lib.config.ts",
