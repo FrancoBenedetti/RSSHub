@@ -6,7 +6,7 @@ import type { APIRoute } from '@/types';
 // Read the lightweight index at startup (once)
 let routeIndex: any = null;
 try {
-    const indexPath = path.join(import.meta.dirname, '../../../../assets/build/route-index.json');
+    const indexPath = path.join(process.cwd(), 'assets/build/route-index.json');
     routeIndex = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
 } catch {
     // Fallback if index isn't built
