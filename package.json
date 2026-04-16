@@ -28,6 +28,7 @@
     "scripts": {
         "build": "npm run build:routes && tsdown",
         "build:docs": "npm run build:routes && tsx scripts/workflow/build-docs.ts",
+        "build:index": "cross-env NODE_ENV=dev tsx scripts/build-route-index.ts",
         "build:lib": "npm run build:routes && tsdown --config ./tsdown-lib.config.ts",
         "build:routes": "cross-env NODE_ENV=dev tsx scripts/workflow/build-routes.ts",
         "build:routes:worker": "cross-env NODE_ENV=dev WORKER_BUILD=true tsx scripts/workflow/build-routes.ts",
