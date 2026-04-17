@@ -38,7 +38,7 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v6', async () => {
+                cache.tryGet(item.link + ':v7', async () => {
                     try {
                         item.author = 'Maroela Media';
                         const response = await ofetch(item.link);
@@ -54,7 +54,7 @@ export const route: Route = {
                         }
 
                         // Clean up
-                        content.find('.wprt-container, .verwante-artikels, .ad-banner, script, iframe, .artikel-knoppies-lys, .single-tags').remove();
+                        content.find('.verwante-artikels, .ad-banner, script, iframe, .artikel-knoppies-lys, .single-tags').remove();
 
                         const fullContent = content.html();
                         if (fullContent) {

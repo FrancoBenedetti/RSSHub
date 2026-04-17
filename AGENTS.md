@@ -125,3 +125,7 @@
 53. **Comments Language**: Write code comments in English for consistency and accessibility.
 
 54. **Parentheses in Arrow Functions**: Always use parentheses around arrow function parameters, even for single parameters.
+
+### Content Extraction
+
+55. **Selective Cheerio Cleanup**: When using `$(...).find(...).remove()` to clean up scraped article content, carefully verify that none of the target selectors (e.g., container classes like `.wprt-container`) act as primary wrappers for the core article text. Overly broad structural selectors can cause the entire content body to be deleted unexpectedly.
