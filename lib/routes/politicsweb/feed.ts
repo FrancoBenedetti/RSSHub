@@ -11,7 +11,16 @@ export const route: Route = {
     categories: ['politics'],
     example: '/politicsweb',
     parameters: {
-        section: 'Section name, e.g., news-and-analysis, comment, politics, archive. Default is daily news feed.',
+        section: {
+            description: 'Section name. Default is daily news feed.',
+            options: [
+                { value: 'daily-news', label: 'Daily News' },
+                { value: 'news-and-analysis', label: 'News and Analysis' },
+                { value: 'comment', label: 'Comment' },
+                { value: 'politics', label: 'Politics' },
+                { value: 'archive', label: 'Archive' },
+            ],
+        },
     },
     features: {
         requireConfig: false,
@@ -29,7 +38,7 @@ export const route: Route = {
 
         // Map common sections to their RSS feeds if possible, or use the default one
         // Browsing the site suggests they have a specific XML structure
-        const feedUrl = `https://www.politicsweb.co.za/politicsweb/rss/politicsweb/en/politicsweb_${section.replaceAll(/-/g, '_')}.xml`;
+        const feedUrl = `https://www.politicsweb.co.za/politicsweb/rss/politicsweb/en/politicsweb_${section.replaceAll('-', '_')}.xml`;
 
         let feed;
         try {
@@ -41,7 +50,7 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link!, async () => {
+                cache.tryGet(item.link! + ':v1', async () => {
                     try {
                         const response = await ofetch(item.link!);
                         const $ = load(response);

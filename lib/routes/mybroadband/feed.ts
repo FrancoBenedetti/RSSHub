@@ -1,5 +1,6 @@
 import { load } from 'cheerio';
 
+import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -10,7 +11,17 @@ export const route: Route = {
     categories: ['technology'],
     example: '/mybroadband/news',
     parameters: {
-        category: 'Category name, can be found in the URL. Default is all news.',
+        category: {
+            description: 'Category name. Default is all news.',
+            options: [
+                { value: 'broadband', label: 'Broadband' },
+                { value: 'business', label: 'Business' },
+                { value: 'computing', label: 'Computing' },
+                { value: 'mobile', label: 'Mobile' },
+                { value: 'telecoms', label: 'Telecoms' },
+                { value: 'hardware', label: 'Hardware' },
+            ],
+        },
     },
     features: {
         requireConfig: false,
@@ -37,7 +48,11 @@ export const route: Route = {
         const baseUrl = 'https://mybroadband.co.za/news/';
         const targetUrl = category ? `${baseUrl}category/${category}` : baseUrl;
 
-        const response = await ofetch(targetUrl);
+        const response = await ofetch(targetUrl, {
+            headers: {
+                'User-Agent': config.trueUA,
+            },
+        });
         const $ = load(response);
 
         // Grid items usually have h3 and a links
@@ -61,8 +76,12 @@ export const route: Route = {
                 .filter((item): item is { title: string; link: string } => item !== null)
                 .slice(0, 15)
                 .map((item) =>
-                    cache.tryGet(item.link, async () => {
-                        const articleResponse = await ofetch(item.link);
+                    cache.tryGet(item.link + ':v2', async () => {
+                        const articleResponse = await ofetch(item.link, {
+                            headers: {
+                                'User-Agent': config.trueUA,
+                            },
+                        });
                         const $article = load(articleResponse);
 
                         // Remove ads and unnecessary elements

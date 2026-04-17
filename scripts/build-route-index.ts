@@ -50,6 +50,7 @@ interface RouteData {
     path: string;
     name: string;
     example?: string;
+    parameters?: any;
     maintainers: string[];
     categories: string[];
     file: string;
@@ -59,7 +60,48 @@ interface ApiRouteData {
     path: string;
     name: string;
     example?: string;
+    parameters?: any;
     file: string;
+}
+
+function extractParameters(text: string): any | undefined {
+    const startIdx = text.indexOf('parameters:');
+    if (startIdx === -1) {
+        return undefined;
+    }
+
+    const openBraceIdx = text.indexOf('{', startIdx);
+    if (openBraceIdx === -1) {
+        return undefined;
+    }
+
+    let depth = 0;
+    let endIdx = -1;
+    for (let i = openBraceIdx; i < text.length; i++) {
+        if (text[i] === '{') {
+            depth++;
+        } else if (text[i] === '}') {
+            depth--;
+        }
+
+        if (depth === 0) {
+            endIdx = i + 1;
+            break;
+        }
+    }
+
+    if (endIdx === -1) {
+        return undefined;
+    }
+
+    const paramStr = text.slice(openBraceIdx, endIdx);
+
+    try {
+        // eslint-disable-next-line no-new-func
+        return new Function(`return ${paramStr}`)();
+    } catch {
+        return undefined;
+    }
 }
 
 function parseNamespaceFile(text: string): NamespaceData | null {
@@ -98,6 +140,7 @@ function parseRouteFile(text: string, fileName: string): RouteData | null {
         path: routePath,
         name,
         example: extractString(metaSection, 'example'),
+        parameters: extractParameters(metaSection),
         maintainers: extractStringArray(metaSection, 'maintainers'),
         categories: extractStringArray(metaSection, 'categories'),
         file: fileName,
@@ -123,6 +166,7 @@ function parseApiRouteFile(text: string, fileName: string): ApiRouteData | null 
         path: routePath,
         name,
         example: extractString(metaSection, 'example'),
+        parameters: extractParameters(metaSection),
         file: fileName,
     };
 }

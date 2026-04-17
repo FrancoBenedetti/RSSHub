@@ -46,7 +46,7 @@
 
 ### Data Handling
 
-21. **Use Cache**: Always [cache](https://docs.rsshub.app/joinus/advanced/use-cache) the returned results when fetching article details in a loop using `cache.tryGet()`.
+21. **Use Cache**: Always [cache](https://docs.rsshub.app/joinus/advanced/use-cache) the returned results when fetching article details in a loop using `cache.tryGet()`. **Cache Invalidation**: When amending an existing route's extraction logic (e.g., fixing parsers, selectors), you MUST bump or add a cache version string to the key (e.g., `item.link + ':v2'`) to ensure stale objects cached by the server (like Vercel CDN or Redis) are busted and your new logic actually runs in production.
 
 22. **Description Content**: The `description` field should contain ONLY the main article content. Do NOT include `title`, `author`, `pubDate`, or tags in `description` - they have their own dedicated fields.
 
@@ -129,3 +129,5 @@
 ### Content Extraction
 
 55. **Selective Cheerio Cleanup**: When using `$(...).find(...).remove()` to clean up scraped article content, carefully verify that none of the target selectors (e.g., container classes like `.wprt-container`) act as primary wrappers for the core article text. Overly broad structural selectors can cause the entire content body to be deleted unexpectedly.
+
+56. **Discoverable Parameter Options**: When a route parameter accepts a specific list of defined choices (like categories or sections), use the object syntax in the `parameters` block to explicitly list `options` (each with a `label` and `value`), rather than just mentioning them in a plain text string. This allows programmatic discovery of the supported route variations by end-users and tooling.

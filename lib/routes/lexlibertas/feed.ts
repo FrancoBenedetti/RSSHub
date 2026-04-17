@@ -9,7 +9,19 @@ export const route: Route = {
     path: '/media/:category?',
     categories: ['traditional-media'],
     example: '/lexlibertas/media',
-    parameters: { category: 'Category name (e.g., `announcements`, `articles`, `media-statements`, `open-letters`, `research-and-analysis`, `speeches`). Leave empty for all media.' },
+    parameters: {
+        category: {
+            description: 'Category name. Leave empty for all media.',
+            options: [
+                { value: 'announcements', label: 'Announcements' },
+                { value: 'articles', label: 'Articles' },
+                { value: 'media-statements', label: 'Media Statements' },
+                { value: 'open-letters', label: 'Open Letters' },
+                { value: 'research-and-analysis', label: 'Research and Analysis' },
+                { value: 'speeches', label: 'Speeches' },
+            ],
+        },
+    },
     features: {
         requireConfig: false,
         requirePuppeteer: false,
@@ -59,7 +71,7 @@ export const route: Route = {
                 .filter((item, index, self) => index === self.findIndex((t) => t.link === item.link))
                 .slice(0, 15)
                 .map((item) =>
-                    cache.tryGet(item.link + ':v1', async () => {
+                    cache.tryGet(item.link + ':v2', async () => {
                         try {
                             const articleResponse = await ofetch(item.link);
                             const $article = load(articleResponse);
