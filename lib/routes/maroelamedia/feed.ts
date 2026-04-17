@@ -1,5 +1,6 @@
 import { load } from 'cheerio';
 
+import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -9,7 +10,24 @@ export const route: Route = {
     path: '/:category?',
     categories: ['traditional-media'],
     example: '/maroelamedia/nuus',
-    parameters: { category: 'Category name (e.g., `nuus`, `vermaak`). Leave empty for the main feed.' },
+    parameters: {
+        category: {
+            description: 'Category name (e.g., `nuus`, `vermaak`). Leave empty for the main feed.',
+            options: [
+                { value: 'nuus', label: 'Nuus' },
+                { value: 'vermaak', label: 'Vermaak' },
+                { value: 'kos', label: 'Kos' },
+                { value: 'leefstyl', label: 'Leefstyl' },
+                { value: 'tegnologie', label: 'Tegnologie' },
+                { value: 'boeke', label: 'Boeke' },
+                { value: 'motor', label: 'Motor' },
+                { value: 'buitelug', label: 'Buitelug' },
+                { value: 'briewe', label: 'Briewe' },
+                { value: 'goeiegoed', label: 'Goeie Goed' },
+                { value: 'radionuus', label: 'Radio Nuus' },
+            ],
+        },
+    },
     features: {
         requireConfig: false,
         requirePuppeteer: false,
@@ -38,10 +56,14 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v7', async () => {
+                cache.tryGet(item.link + ':v8', async () => {
                     try {
                         item.author = 'Maroela Media';
-                        const response = await ofetch(item.link);
+                        const response = await ofetch(item.link, {
+                            headers: {
+                                'User-Agent': config.trueUA,
+                            },
+                        });
                         const $ = load(response);
 
                         let content = $('.entry-content, [itemprop="articleBody"], .post-content').first();

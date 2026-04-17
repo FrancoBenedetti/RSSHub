@@ -1,5 +1,6 @@
 import { load } from 'cheerio';
 
+import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -9,7 +10,18 @@ export const route: Route = {
     path: '/:category?',
     categories: ['traditional-media'],
     example: '/kragdag/veiligheid',
-    parameters: { category: 'Category name (e.g., `veiligheid`, `gesondheid`). Leave empty for the main feed.' },
+    parameters: {
+        category: {
+            description: 'Category name. Leave empty for the main feed.',
+            options: [
+                { value: 'veiligheid', label: 'Veiligheid' },
+                { value: 'gesondheid', label: 'Gesondheid' },
+                { value: 'energieselfvoorsiening', label: 'Energie' },
+                { value: 'voedselteenstand', label: 'Voedsel' },
+                { value: 'water', label: 'Water' },
+            ],
+        },
+    },
     features: {
         requireConfig: false,
         requirePuppeteer: false,
@@ -38,9 +50,13 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v1', async () => {
+                cache.tryGet(item.link + ':v3', async () => {
                     try {
-                        const response = await ofetch(item.link);
+                        const response = await ofetch(item.link, {
+                            headers: {
+                                'User-Agent': config.trueUA,
+                            },
+                        });
                         const $ = load(response);
 
                         let content = $('#post_body').first();
