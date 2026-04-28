@@ -1,11 +1,37 @@
+npm warn Unknown project config "package-manager-strict". This will stop working in the next major version of npm.
 
-> rsshub@1.0.0 dev /home/franco/Projects/RSSHub
+> rsshub@1.0.0 dev
 > cross-env NODE_ENV=dev NODE_OPTIONS='--max-http-header-size=32768' tsx watch --inspect --clear-screen=false lib/index.ts
 
-Debugger listening on ws://127.0.0.1:9229/ff7aa487-fb6b-4e3d-a8e5-81e7aa1c4d90
+Debugger listening on ws://127.0.0.1:9229/ff5a334a-2791-4824-b124-04001842712c
 For help, see: https://nodejs.org/en/docs/inspector
-(node:995272) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
+node:internal/fs/watchers:254
+    const error = new UVException({
+                  ^
+
+Error: ENOSPC: System limit for number of file watchers reached, watch '/home/franco/Projects/RSSHub/lib/routes/themoviedb/utils.tsx'
+    at FSWatcher.<computed> (node:internal/fs/watchers:254:19)
+    at Object.watch (node:fs:2534:36)
+    at createFsWatchInstance (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:7811)
+    at setFsWatchListener (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:8144)
+    at ca._watchWithNodeFs (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:9639)
+    at ca._handleFile (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:10327)
+    at ca._addToNodeFs (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:13460)
+    at async file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:25103
+    at async Promise.all (index 0)
+Emitted 'error' event on FSWatcher instance at:
+    at pl._handleError (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:27555)
+    at ca._addToNodeFs (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:13553)
+    at async file:///home/franco/Projects/RSSHub/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs:53:25103
+    at async Promise.all (index 0) {
+  errno: -28,
+  syscall: 'watch',
+  code: 'ENOSPC',
+  path: '/home/franco/Projects/RSSHub/lib/routes/themoviedb/utils.tsx',
+  filename: '/home/franco/Projects/RSSHub/lib/routes/themoviedb/utils.tsx'
+}
+
+Node.js v24.4.1
 [32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
 [32minfo[39m: 🔗 Local: 👉 http://localhost:1200
 [32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
@@ -15,82 +41,94 @@ For help, see: https://nodejs.org/en/docs/inspector
 [32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
 [32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
 [32minfo[39m: 🔗 Network: 👉 http://[::]:1200
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 5s
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 9ms
-1:12:29 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
-Debugger listening on ws://127.0.0.1:9229/ca3ba28e-c752-4889-a7ec-3d325b4ac5cf
-For help, see: https://nodejs.org/en/docs/inspector
-1:12:35 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
-Debugger listening on ws://127.0.0.1:9229/73d8402d-fc53-47dd-b2ae-e39b4e350966
-For help, see: https://nodejs.org/en/docs/inspector
-(node:995956) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
-[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
-[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
-[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
-1:13:35 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
-Debugger listening on ws://127.0.0.1:9229/1e71b9d6-ff68-4609-b0b2-fbe8a122dbff
-For help, see: https://nodejs.org/en/docs/inspector
-(node:996100) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
-[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
-[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
-[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
-1:14:20 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
-Debugger listening on ws://127.0.0.1:9229/59587710-994b-40f8-872a-ad098ba32960
-For help, see: https://nodejs.org/en/docs/inspector
-(node:996226) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
-[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
-[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
-[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
-1:15:03 PM [tsx] change in ./lib/routes/maroelamedia/feed.ts Restarting...
-Debugger listening on ws://127.0.0.1:9229/e37ce403-7b33-4a5f-9d8c-052958263d4f
-For help, see: https://nodejs.org/en/docs/inspector
-(node:996362) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
-[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
-[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
-[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
-[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 4s
-[32minfo[39m: <-- GET /maroelamedia
-[32minfo[39m: --> GET /maroelamedia [32m200[0m 3s
-[32minfo[39m: <-- GET /favicon.ico
-[32minfo[39m: --> GET /favicon.ico [32m200[0m 3ms
-[32minfo[39m: <-- GET /maroelamedia/nuus
-[32minfo[39m: --> GET /maroelamedia/nuus [32m200[0m 3s
-[32minfo[39m: <-- GET /maroelamedia/vermaak
-[32minfo[39m: --> GET /maroelamedia/vermaak [32m200[0m 8s
+[32minfo[39m: <-- GET /dailymaverick/section/maverick-news
+[32minfo[39m: --> GET /dailymaverick/section/maverick-news [32m200[0m 4s
+[32minfo[39m: <-- GET /dailymaverick/section/maverick-news
+[32minfo[39m: --> GET /dailymaverick/section/maverick-news [32m200[0m 102ms
+[32minfo[39m: <-- GET /dailymaverick/section/maverick-news
+[32minfo[39m: --> GET /dailymaverick/section/maverick-news [32m200[0m 77ms
+[32minfo[39m: <-- GET /dailymaverick/section/maverick-news
+[32minfo[39m: --> GET /dailymaverick/section/maverick-news [32m200[0m 62ms
+[32minfo[39m: <-- GET /vryheidstigting/artikels
+[32minfo[39m: --> GET /vryheidstigting/artikels [32m200[0m 2s
+[32minfo[39m: <-- GET /vryheidstigting/artikels
+[32minfo[39m: --> GET /vryheidstigting/artikels [32m200[0m 14ms
+[32minfo[39m: <-- GET /businesstech/news
+[31merror[39m: Request https://businesstech.co.za/news/wealth/858060/the-big-problem-for-south-africans-earning-over-r30000-a-month/ fail: ConnectTimeoutError: Connect Timeout Error (attempted addresses: 104.20.28.19:443, 2606:4700:10::ac42:95d0:443, 172.66.149.208:443, 2606:4700:10::6814:1c13:443, timeout: 10000ms) TypeError: fetch failed
+[32minfo[39m: --> GET /businesstech/news [32m200[0m 13s
+[32minfo[39m: <-- GET /dailyinvestor/latest
+[32minfo[39m: --> GET /dailyinvestor/latest [32m200[0m 3s
+[32minfo[39m: <-- GET /biznews/latest
+[32minfo[39m: --> GET /biznews/latest [32m200[0m 1s
+[32minfo[39m: <-- GET /solidariteit/nuus
+[31merror[39m: Error in /solidariteit/nuus: NotFoundError: NotFoundError
+    at notFoundHandler (/home/franco/Projects/RSSHub/lib/errors/index.tsx:89:71)
+    at dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:34:23)
+    at file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:46
+    at file:///home/franco/Projects/RSSHub/node_modules/.pnpm/@hono+node-server@1.19.14_hono@4.12.12/node_modules/@hono/node-server/dist/serve-static.mjs:99:14
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/cache.ts:64:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/parameter.ts:68:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)The route does not exist or has been deleted.
+[32minfo[39m: --> GET /solidariteit/nuus [33m404[0m 13ms
+[32minfo[39m: <-- GET /solidariteit
+[31merror[39m: Error in /solidariteit: NotFoundError: NotFoundError
+    at notFoundHandler (/home/franco/Projects/RSSHub/lib/errors/index.tsx:89:71)
+    at dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:34:23)
+    at file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:46
+    at file:///home/franco/Projects/RSSHub/node_modules/.pnpm/@hono+node-server@1.19.14_hono@4.12.12/node_modules/@hono/node-server/dist/serve-static.mjs:99:14
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/cache.ts:64:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/parameter.ts:68:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)The route does not exist or has been deleted.
+[32minfo[39m: --> GET /solidariteit [33m404[0m 5ms
+[32minfo[39m: <-- GET /solidariteit/leesstof
+[32minfo[39m: --> GET /solidariteit/leesstof [32m200[0m 2s
+[32minfo[39m: <-- GET /solidariteit/leesstof
+[32minfo[39m: --> GET /solidariteit/leesstof [32m200[0m 15ms
+[32minfo[39m: <-- GET /solidariteit/leesstof
+[32minfo[39m: --> GET /solidariteit/leesstof [32m200[0m 11ms
+[32minfo[39m: <-- GET /dailymaverick/section/maverick-news
+[32minfo[39m: --> GET /dailymaverick/section/maverick-news [32m200[0m 1s
+[32minfo[39m: <-- GET /dailymaverick/section/maverick-news
+[32minfo[39m: --> GET /dailymaverick/section/maverick-news [32m200[0m 148ms

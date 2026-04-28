@@ -1,0 +1,130 @@
+npm warn Unknown project config "package-manager-strict". This will stop working in the next major version of npm.
+
+> rsshub@1.0.0 dev
+> cross-env NODE_ENV=dev NODE_OPTIONS='--max-http-header-size=32768' tsx watch --inspect --clear-screen=false lib/index.ts
+
+Debugger listening on ws://127.0.0.1:9229/bb927b3a-84e8-40e2-8c54-410fb207d6fd
+For help, see: https://nodejs.org/en/docs/inspector
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.17.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /youtube/user/@BizNewsTV
+[31merror[39m: Error in /youtube/user/@BizNewsTV: Error: Error: this route is empty, please check the original site or <a href="https://github.com/DIYgod/RSSHub/issues/new/choose">create an issue</a>
+    at middleware (/home/franco/Projects/RSSHub/lib/middleware/parameter.ts:73:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async compress2 (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/middleware/compress/index.js:8:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async trimTrailingSlash2 (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/middleware/trailing-slash/index.js:11:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/hono-base.js:301:25
+    at async responseViaResponseObject (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/@hono+node-server@2.0.0_hono@4.12.15/node_modules/@hono/node-server/dist/index.mjs:709:13)
+[32minfo[39m: --> GET /youtube/user/@BizNewsTV [31m503[0m 6s
+[32minfo[39m: <-- GET /youtube/user/@BizNewsTV
+[31merror[39m: Error in /youtube/user/@BizNewsTV: Error: Error: this route is empty, please check the original site or <a href="https://github.com/DIYgod/RSSHub/issues/new/choose">create an issue</a>
+    at middleware (/home/franco/Projects/RSSHub/lib/middleware/parameter.ts:73:19)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/home/franco/Projects/RSSHub/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async compress2 (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/middleware/compress/index.js:8:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async trimTrailingSlash2 (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/middleware/trailing-slash/index.js:11:5)
+    at async dispatch (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/compose.js:22:17)
+    at async file:///home/franco/Projects/RSSHub/node_modules/.pnpm/hono@4.12.15/node_modules/hono/dist/hono-base.js:301:25
+    at async responseViaResponseObject (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/@hono+node-server@2.0.0_hono@4.12.15/node_modules/@hono/node-server/dist/index.mjs:709:13)
+    at async Server.<anonymous> (file:///home/franco/Projects/RSSHub/node_modules/.pnpm/@hono+node-server@2.0.0_hono@4.12.15/node_modules/@hono/node-server/dist/index.mjs:807:11)
+[32minfo[39m: --> GET /youtube/user/@BizNewsTV [31m503[0m 23ms
+9:15:25 PM [tsx] change in ./lib/routes/youtube/user.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/86913144-7b3b-438c-ab41-fc76a004f6ef
+For help, see: https://nodejs.org/en/docs/inspector
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.17.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /youtube/user/@BizNewsTV
+Fetching data for @BizNewsTV embed: true filterShorts: true
+Returned data items length: 30
+[32minfo[39m: --> GET /youtube/user/@BizNewsTV [32m200[0m 5s
+9:31:31 PM [tsx] change in ./lib/routes/youtube/api/google.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/34c70bea-df73-4831-b088-fecf5b1a7ef7
+For help, see: https://nodejs.org/en/docs/inspector
+9:32:24 PM [tsx] change in ./lib/routes/youtube/api/google.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/1f7f839e-b32e-4af3-bbaa-01a09fd0cff6
+For help, see: https://nodejs.org/en/docs/inspector
+9:32:59 PM [tsx] change in ./lib/routes/youtube/utils.tsx Restarting...
+Debugger listening on ws://127.0.0.1:9229/46791f55-fcc5-4376-81a7-b6105c4c895e
+For help, see: https://nodejs.org/en/docs/inspector
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.17.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+9:33:34 PM [tsx] change in ./lib/routes/youtube/user.ts Restarting...
+Debugger listening on ws://127.0.0.1:9229/bac65fdc-758b-4dba-a156-a3c8e967561b
+For help, see: https://nodejs.org/en/docs/inspector
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.68.110:1200
+[32minfo[39m: 🔗 Network: 👉 http://100.121.9.11:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.23.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.22.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.21.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.17.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://172.20.0.1:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /youtube/user/@BizNewsTV
+[32minfo[39m: --> GET /youtube/user/@BizNewsTV [32m200[0m 3s

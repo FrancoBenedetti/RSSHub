@@ -8,7 +8,7 @@ import { exec, youtubeOAuth2Client } from './api/google';
 
 export const getPlaylistItems = (id, part, cache) =>
     cache.tryGet(
-        `youtube:getPlaylistItems:${id}`,
+        `youtube:getPlaylistItems:${id}:v2`,
         async () => {
             const res = await exec((youtube) =>
                 youtube.playlistItems.list({

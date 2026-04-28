@@ -107,7 +107,7 @@ export const getDataByUsername = async ({ username, embed, filterShorts, isJsonF
     })();
 
     const playlistItems = await utils.getPlaylistItems(playlistId, 'snippet', cache);
-    if (!playlistItems) {
+    if (!playlistItems || !playlistItems.data.items || playlistItems.data.items.length === 0) {
         throw new NotFoundError("This channel doesn't have any content.");
     }
     const videoIds = playlistItems.data.items.map((item) => item.snippet.resourceId.videoId);
@@ -155,7 +155,11 @@ export const getDataByChannelId = async ({ channelId, embed, filterShorts, isJso
     // Use the utility function to get the appropriate playlist ID based on filterShorts setting
     const playlistId = filterShorts ? utils.getPlaylistWithShortsFilter(channelId) : originalPlaylistId;
 
-    const data = (await utils.getPlaylistItems(playlistId, 'snippet', cache)).data.items;
+    const playlistItems = await utils.getPlaylistItems(playlistId, 'snippet', cache);
+    if (!playlistItems || !playlistItems.data.items || playlistItems.data.items.length === 0) {
+        throw new NotFoundError("This channel doesn't have any content.");
+    }
+    const data = playlistItems.data.items;
     const videoIds = data.map((item) => item.snippet.resourceId.videoId);
     const videoDetails = await utils.getVideos(videoIds.join(','), 'contentDetails', cache);
     const subtitlesMap = isJsonFeed ? await getSrtAttachmentBatch(videoIds) : {};
@@ -196,7 +200,11 @@ export const getDataByChannelId = async ({ channelId, embed, filterShorts, isJso
 export const getDataByPlaylistId = async ({ playlistId, embed, isJsonFeed }: { playlistId: string; embed: boolean; isJsonFeed: boolean }): Promise<Data> => {
     const playlistTitle = (await utils.getPlaylist(playlistId, 'snippet', cache)).data.items[0].snippet.title;
 
-    const data = (await utils.getPlaylistItems(playlistId, 'snippet', cache)).data.items.filter((d) => d.snippet.title !== 'Private video' && d.snippet.title !== 'Deleted video');
+    const playlistItems = await utils.getPlaylistItems(playlistId, 'snippet', cache);
+    if (!playlistItems || !playlistItems.data.items || playlistItems.data.items.length === 0) {
+        throw new NotFoundError("This playlist doesn't have any content.");
+    }
+    const data = playlistItems.data.items.filter((d) => d.snippet.title !== 'Private video' && d.snippet.title !== 'Deleted video');
     const videoIds = data.map((item) => item.snippet.resourceId.videoId);
     const videoDetails = await utils.getVideos(videoIds.join(','), 'contentDetails', cache);
     const subtitlesMap = isJsonFeed ? await getSrtAttachmentBatch(videoIds) : {};
