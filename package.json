@@ -26,8 +26,9 @@
         }
     },
     "scripts": {
-        "build": "npm run build:routes && tsdown",
+        "build": "npm run build:routes && npm run build:index && tsdown",
         "build:docs": "npm run build:routes && tsx scripts/workflow/build-docs.ts",
+        "build:index": "cross-env NODE_ENV=dev tsx scripts/build-route-index.ts",
         "build:lib": "npm run build:routes && tsdown --config ./tsdown-lib.config.ts",
         "build:routes": "cross-env NODE_ENV=dev tsx scripts/workflow/build-routes.ts",
         "build:routes:worker": "cross-env NODE_ENV=dev WORKER_BUILD=true tsx scripts/workflow/build-routes.ts",
@@ -45,7 +46,7 @@
         "profiling": "cross-env NODE_ENV=production tsx --prof lib/index.ts",
         "start": "cross-env NODE_ENV=production NODE_OPTIONS='--max-http-header-size=32768' node dist/index.mjs",
         "test": "npm run format:check && npm run vitest:coverage",
-        "vercel-build": "npm run build:routes && tsdown --config ./tsdown-vercel.config.ts",
+        "vercel-build": "npm run build:routes && npm run build:index && tsdown --config ./tsdown-vercel.config.ts",
         "vitest": "cross-env NODE_ENV=test vitest",
         "vitest:coverage": "cross-env NODE_ENV=test vitest --coverage.enabled --reporter=junit",
         "vitest:fullroutes": "cross-env NODE_ENV=test FULL_ROUTES_TEST=true vitest --reporter=json --reporter=default --outputFile=\"./assets/build/test-full-routes.json\" routes",
