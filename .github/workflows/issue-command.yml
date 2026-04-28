@@ -36,6 +36,49 @@ jobs:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   trigger: '/wip'
 
+    vouch-manage:
+        name: Vouch Manage
+        if: ${{ startsWith(github.event.comment.body, 'vouch') || startsWith(github.event.comment.body, 'unvouch') || startsWith(github.event.comment.body, 'denounce') }}
+        runs-on: ubuntu-slim
+        timeout-minutes: 5
+        permissions:
+            contents: write
+            issues: write
+            pull-requests: write
+        concurrency:
+            group: vouch-manage
+            cancel-in-progress: false
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+            - id: vouch
+              uses: mitchellh/vouch/action/manage-by-issue@c6d80ead49839655b61b422700b7a3bc9d0804a9 # v1.4.2
+              with:
+                  issue-id: ${{ github.event.issue.number }}
+                  comment-id: ${{ github.event.comment.id }}
+                  roles: admin,maintain,write
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Close PR if denounced
+              if: ${{ github.event.issue.pull_request && steps.vouch.outputs.status == 'denounced' }}
+              uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+              with:
+                  script: |
+                      const prNumber = context.payload.issue.number;
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: prNumber,
+                          body: 'This pull request has been automatically closed.',
+                      });
+                      await github.rest.pulls.update({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          pull_number: prNumber,
+                          state: 'closed',
+                      });
+
     test-on-demand:
         name: Test route on demand
         if: startsWith(github.event.comment.body, '/test')
@@ -71,7 +114,7 @@ jobs:
               uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
 
             - name: Use Node.js Active LTS
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
               with:
                   node-version: lts/*
                   cache: 'pnpm'
