@@ -1,7 +1,9 @@
-import Parser from 'rss-parser';
+import { load } from 'cheerio';
 
+import { config } from '@/config';
 import type { Route } from '@/types';
-import puppeteer from '@/utils/puppeteer';
+import cache from '@/utils/cache';
+import ofetch from '@/utils/ofetch';
 
 export const route: Route = {
     path: '/topstories',
@@ -10,7 +12,7 @@ export const route: Route = {
     parameters: {},
     features: {
         requireConfig: false,
-        requirePuppeteer: true,
+        requirePuppeteer: false,
         antiCrawler: true,
         supportBT: false,
         supportPodcast: false,
@@ -18,79 +20,102 @@ export const route: Route = {
     },
     radar: [
         {
-            source: ['news24.com/'],
+            source: ['news24.com/news24/topstories', 'news24.com/topstories', 'news24.com/'],
             target: '/topstories',
         },
     ],
     name: 'Top Stories',
     maintainers: ['FrancoBenedetti'],
     handler: async () => {
-        const url = 'https://feeds.news24.com/articles/news24/TopStories/rss';
+        const baseUrl = 'https://www.news24.com';
+        const listUrl = `${baseUrl}/news24/topstories`;
 
-        const browser = await puppeteer({ stealth: true });
-        const page = await browser.newPage();
-
-        await page.setRequestInterception(true);
-        page.on('request', (request) => {
-            const resourceType = request.resourceType();
-            if (['document', 'script', 'xhr', 'fetch'].includes(resourceType)) {
-                request.continue();
-            } else {
-                request.abort();
-            }
+        const response = await ofetch(listUrl, {
+            headers: {
+                'User-Agent': config.trueUA,
+                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-ZA,en;q=0.9',
+                Referer: 'https://www.google.com/',
+            },
+            responseType: 'text',
         });
 
-        let xmlContent = '';
-        page.on('response', async (response) => {
-            if (response.url().includes('TopStories') && response.status() === 200) {
-                try {
-                    const text = await response.text();
-                    if (text.includes('<rss') || text.includes('<feed')) {
-                        xmlContent = text;
+        const $ = load(response);
+
+        // Deduplicate by link - each article card appears multiple times in the DOM
+        const seen = new Set<string>();
+        const articleLinks: Array<{ href: string; title: string; category: string }> = [];
+
+        $('a.js-article-link').each((_, el) => {
+            const href = $(el).attr('href');
+            const title = $(el).find('span.js-article-title').text().trim();
+            if (!href || !title || seen.has(href)) {
+                return;
+            }
+            seen.add(href);
+            const articleEl = $(el).closest('article');
+            const category = articleEl.find('.category-name').first().text().trim();
+            articleLinks.push({ href, title, category });
+        });
+
+        const items = await Promise.all(
+            articleLinks.slice(0, 20).map(({ href, title, category }) => {
+                const link = href.startsWith('http') ? href : `${baseUrl}${href}`;
+                return cache.tryGet(link + ':v1', async () => {
+                    try {
+                        const articleHtml = await ofetch(link, {
+                            headers: {
+                                'User-Agent': config.trueUA,
+                                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                                'Accept-Language': 'en-ZA,en;q=0.9',
+                                Referer: listUrl,
+                            },
+                            responseType: 'text',
+                        });
+                        const $a = load(articleHtml);
+
+                        // Extract article body
+                        let content = $a('article .article__body, .article-body, [itemprop="articleBody"]').first();
+                        if (!content.length) {
+                            content = $a('article');
+                        }
+                        content.find('script, style, iframe, .article__share, .article__related, .article__footer, .ad, nav').remove();
+
+                        // Extract pubDate from meta
+                        const pubDateStr = $a('meta[property="article:published_time"]').attr('content') || $a('time[itemprop="datePublished"]').attr('datetime') || $a('time.article-item__date').attr('datetime');
+
+                        // Extract og:image
+                        const image = $a('meta[property="og:image"]').attr('content');
+                        let description = content.html() || '';
+                        if (image && !description.includes(image)) {
+                            description = `<img src="${image}"><br>${description}`;
+                        }
+
+                        return {
+                            title,
+                            link,
+                            description,
+                            pubDate: pubDateStr ? new Date(pubDateStr).toUTCString() : undefined,
+                            category: category ? [category] : undefined,
+                        };
+                    } catch {
+                        // Fallback: return with title and link only
+                        return {
+                            title,
+                            link,
+                            description: '',
+                            category: category ? [category] : undefined,
+                        };
                     }
-                } catch {
-                    // Ignore errors reading body
-                }
-            }
-        });
-
-        // Wait for networkidle2 to ensure any Cloudflare JS challenges finish
-        const response = await page.goto(url, { waitUntil: 'networkidle2' });
-
-        if (!xmlContent && response) {
-            try {
-                xmlContent = await response.text();
-            } catch {
-                // Ignore
-            }
-        }
-
-        await page.close();
-        await browser.close();
-
-        if (!xmlContent || !xmlContent.includes('<rss')) {
-            throw new Error('Failed to retrieve valid XML from News24');
-        }
-
-        // News24 feed generator frequently omits the required version attribute
-        if (xmlContent.includes('<rss') && !xmlContent.includes('version=')) {
-            xmlContent = xmlContent.replace('<rss', '<rss version="2.0"');
-        }
-
-        const parser = new Parser();
-        const feed = await parser.parseString(xmlContent);
+                });
+            })
+        );
 
         return {
-            title: feed.title || 'News24 Top Stories',
-            link: feed.link || 'https://www.news24.com',
-            description: feed.description || 'News24 Top Stories',
-            item: feed.items.map((item) => ({
-                title: item.title || '',
-                description: item.content || item.contentSnippet || '',
-                pubDate: item.pubDate,
-                link: item.link || '',
-                author: item.creator || item.author,
-            })),
+            title: 'News24 Top Stories',
+            link: listUrl,
+            description: 'Top Stories from News24 South Africa',
+            item: items,
         };
     },
 };
