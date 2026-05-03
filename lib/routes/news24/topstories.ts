@@ -61,7 +61,7 @@ export const route: Route = {
         const items = await Promise.all(
             articleLinks.slice(0, 20).map(({ href, title, category }) => {
                 const link = href.startsWith('http') ? href : `${baseUrl}${href}`;
-                return cache.tryGet(link + ':v1', async () => {
+                return cache.tryGet(link + ':v3', async () => {
                     try {
                         const articleHtml = await ofetch(link, {
                             headers: {
@@ -74,19 +74,22 @@ export const route: Route = {
                         });
                         const $a = load(articleHtml);
 
-                        // Extract article body
-                        let content = $a('article .article__body, .article-body, [itemprop="articleBody"]').first();
-                        if (!content.length) {
-                            content = $a('article');
-                        }
+                        // Extract article body — confirmed selector against live News24 HTML
+                        const content = $a('.article__body').first();
                         content.find('script, style, iframe, .article__share, .article__related, .article__footer, .ad, nav').remove();
 
-                        // Extract pubDate from meta
-                        const pubDateStr = $a('meta[property="article:published_time"]').attr('content') || $a('time[itemprop="datePublished"]').attr('datetime') || $a('time.article-item__date').attr('datetime');
+                        // article:published_time meta is absent on News24; extract from JSON-LD instead
+                        const jsonLdMatch = articleHtml.match(/"datePublished"\s*:\s*"([^"]+)"/);
+                        const pubDateStr = jsonLdMatch?.[1];
 
-                        // Extract og:image
+                        // Extract og:image and og:description (used as fallback for paywalled articles)
                         const image = $a('meta[property="og:image"]').attr('content');
+                        const ogDesc = $a('meta[property="og:description"]').attr('content') || $a('meta[name="description"]').attr('content');
+                        // Paywalled articles (e.g. CityPress) return an empty .article__body
                         let description = content.html() || '';
+                        if (!description && ogDesc) {
+                            description = `<p>${ogDesc}</p>`;
+                        }
                         if (image && !description.includes(image)) {
                             description = `<img src="${image}"><br>${description}`;
                         }
