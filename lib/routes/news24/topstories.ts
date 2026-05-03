@@ -72,6 +72,11 @@ export const route: Route = {
             throw new Error('Failed to retrieve valid XML from News24');
         }
 
+        // News24 feed generator frequently omits the required version attribute
+        if (xmlContent.includes('<rss') && !xmlContent.includes('version=')) {
+            xmlContent = xmlContent.replace('<rss', '<rss version="2.0"');
+        }
+
         const parser = new Parser();
         const feed = await parser.parseString(xmlContent);
 
