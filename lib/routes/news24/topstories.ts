@@ -25,10 +25,20 @@ export const route: Route = {
     name: 'Top Stories',
     maintainers: ['FrancoBenedetti'],
     handler: async () => {
-        const url = 'http://feeds.news24.com/articles/news24/TopStories/rss';
+        const url = 'https://feeds.news24.com/articles/news24/TopStories/rss';
 
         const browser = await puppeteer({ stealth: true });
         const page = await browser.newPage();
+
+        await page.setRequestInterception(true);
+        page.on('request', (request) => {
+            const resourceType = request.resourceType();
+            if (['document', 'script', 'xhr', 'fetch'].includes(resourceType)) {
+                request.continue();
+            } else {
+                request.abort();
+            }
+        });
 
         let xmlContent = '';
         page.on('response', async (response) => {
@@ -56,6 +66,7 @@ export const route: Route = {
         }
 
         await page.close();
+        await browser.close();
 
         if (!xmlContent || !xmlContent.includes('<rss')) {
             throw new Error('Failed to retrieve valid XML from News24');

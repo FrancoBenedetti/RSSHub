@@ -29,11 +29,17 @@ export const route: Route = {
     handler: async () => {
         const feedUrl = 'https://fak.org.za/feed/';
 
-        const feed = await parser.parseURL(feedUrl);
+        const response = await ofetch(feedUrl, {
+            headers: {
+                'User-Agent': config.trueUA,
+            },
+            responseType: 'text',
+        });
+        const feed = await parser.parseString(response);
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v1', async () => {
+                cache.tryGet(item.link + ':v2', async () => {
                     try {
                         const response = await ofetch(item.link, {
                             headers: {
