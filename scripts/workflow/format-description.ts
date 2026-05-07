@@ -267,10 +267,23 @@ async function processFile(filePath: string): Promise<void> {
     }
 }
 
+function isRouteFile(filePath: string): boolean {
+    const abs = path.resolve(filePath);
+    if (!abs.startsWith(routesDir + path.sep)) {
+        return false;
+    }
+    const base = path.basename(abs);
+    return /\.tsx?$/.test(base) && !base.endsWith('.d.ts');
+}
+
 async function main() {
     const started = performance.now();
-    // @ts-ignore ts(2550)
-    const files: string[] = await Array.fromAsync(walk(routesDir));
+    const args = process.argv.slice(2);
+    const files: string[] =
+        args.length > 0
+            ? args.map((f) => path.resolve(f)).filter((f) => isRouteFile(f))
+            : // @ts-ignore ts(2550)
+              await Array.fromAsync(walk(routesDir));
 
     await Promise.all(files.map((f) => processFile(f)));
 
