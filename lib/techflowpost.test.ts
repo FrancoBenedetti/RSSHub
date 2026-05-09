@@ -1,9 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 
-import { route as expressRoute } from './express';
-import { route as featuredRoute } from './featured';
-import { route as indexRoute } from './index';
+import { route as indexRoute } from './routes/techflowpost';
+import { route as expressRoute } from './routes/techflowpost/express';
+import { route as featuredRoute } from './routes/techflowpost/featured';
 
 const challengeArg = '7FC0A515A247CA56A8EE791EF40FF1CAEB93AAA6';
 const expectedCookie = 'acw_sc__v2=69fef11a2a690097fa41a9b697a798108d4fb906';
