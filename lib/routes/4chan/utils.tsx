@@ -24,28 +24,30 @@ const parseParams = (routeParams?: string) => {
 
 const processCatalog = ({ data, board, viewOptions }: { data: CatalogApiReturn; board: string; viewOptions: ViewOptions }) => {
     const transformedData = data.flatMap((page) => page.threads);
-    return transformedData.filter((thread) => {
-        if (viewOptions.excludeSticky && thread.sticky) {
-            return false;
-        }
+    return transformedData
+        .filter((thread) => {
+            if (viewOptions.excludeSticky && thread.sticky) {
+                return false;
+            }
 
-        const replies = thread.replies ?? 0;
-        if (viewOptions.minReplies !== undefined && replies < viewOptions.minReplies) {
-            return false;
-        }
+            const replies = thread.replies ?? 0;
+            if (viewOptions.minReplies !== undefined && replies < viewOptions.minReplies) {
+                return false;
+            }
 
-        if (viewOptions.maxReplies !== undefined && replies > viewOptions.maxReplies) {
-            return false;
-        }
+            if (viewOptions.maxReplies !== undefined && replies > viewOptions.maxReplies) {
+                return false;
+            }
 
-        return true;
-    }).map((thread) => ({
-        author: `${thread.name} ${thread.trip ?? thread.no}`,
-        description: renderToString(renderPost({ post: thread, board, viewOptions })),
-        link: `https://boards.4chan.org/${board}/thread/${thread.no}`,
-        pubDate: parseDate(thread.time * 1000),
-        title: thread.sub ?? sanitizeHtml(thread.com?.split('<br>')[0] ?? '', { allowedTags: [] }),
-    }));
+            return true;
+        })
+        .map((thread) => ({
+            author: `${thread.name} ${thread.trip ?? thread.no}`,
+            description: renderToString(renderPost({ post: thread, board, viewOptions })),
+            link: `https://boards.4chan.org/${board}/thread/${thread.no}`,
+            pubDate: parseDate(thread.time * 1000),
+            title: thread.sub ?? sanitizeHtml(thread.com?.split('<br>')[0] ?? '', { allowedTags: [] }),
+        }));
 };
 
 const renderPost = ({ post, board, viewOptions }: { post: ChanPost; board: string; viewOptions: ViewOptions }) => {

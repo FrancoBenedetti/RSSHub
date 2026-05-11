@@ -48,8 +48,8 @@ export const route: Route = {
 | \`showReplyCount\`  | Show number of replies of each thread in catalog | \`0\`/\`1\`/\`true\`/\`false\` | \`false\`     |
 | \`showLastReplies\` | Show last 5 replies of each thread               | \`0\`/\`1\`/\`true\`/\`false\` | \`false\`     |
 | \`revealSpoilers\`  | Don't wrap images tagged as spoilers             | \`0\`/\`1\`/\`true\`/\`false\` | \`false\`     |
-| \`excludeSticky\`  | Filter out sticky threads                        | \`0\`/\`1\`/\`true\`/\`false\` | \`false\`     |
-| \`minReplies\`     | Minimum replies per thread                       | Integer                | None        |
-| \`maxReplies\`     | Maximum replies per thread                       | Integer                | None        |`,
+| \`excludeSticky\`   | Filter out sticky threads                        | \`0\`/\`1\`/\`true\`/\`false\` | \`false\`     |
+| \`minReplies\`      | Minimum replies per thread                       | Integer                | None        |
+| \`maxReplies\`      | Maximum replies per thread                       | Integer                | None        |`,
     handler,
 };
