@@ -96,7 +96,7 @@ jobs:
                           "sed*": "allow",
                           "cat*": "allow",
                           "echo*": "allow",
-                          "head*": "allow",
+                          "head*": "allow"
                         },
                         "webfetch": "deny"
                       }
