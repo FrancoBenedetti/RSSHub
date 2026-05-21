@@ -1,11 +1,42 @@
 .DS_Store
+# Extra macOS metadata/indexing files
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+
+# Windows image caches and system files
+Thumbs.db
+Thumbs.db:extract_subimage
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
 .cursorrules
 .devenv
 .direnv
+
+# Local environment variables and secrets
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
 .eslintcache
+.oxlintcache
+.prettiercache
+.cache/
+
 .idea
 .pre-commit-config.yaml
+
+# Log files and debug outputs
+*.log
 .log
 .now
 .roomodes
@@ -18,6 +49,11 @@
 
 *.swp
 *.iml
+*~
+*.bak
+*.tmp
+*.temp
+*.tsbuildinfo
 
 app-minimal/
 assets/build/
@@ -36,6 +72,8 @@ combined.log
 dump.rdb
 error.log
 npm-debug.log
+.pnpm-debug.log
+pnpm-debug.log
 package-lock.json
 # pnpm-lock.yaml
 yarn.lock
