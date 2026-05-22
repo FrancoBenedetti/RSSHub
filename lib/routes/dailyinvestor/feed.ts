@@ -1,9 +1,5 @@
-import { load } from 'cheerio';
-import parser from '@/utils/rss-parser';
-import { config } from '@/config';
 import type { Route } from '@/types';
-import cache from '@/utils/cache';
-import ofetch from '@/utils/ofetch';
+import parser from '@/utils/rss-parser';
 
 export const route: Route = {
     path: '/latest',
@@ -26,52 +22,23 @@ export const route: Route = {
     name: 'Latest News',
     maintainers: ['FrancoBenedetti'],
     handler: async () => {
-        const feedUrl = 'https://dailyinvestor.com/feed/';
+        // dailyinvestor.com blocks Vercel datacenter IPs (Cloudflare WAF).
+        // Use Google News RSS as a reliable proxy instead.
+        const feedUrl = 'https://news.google.com/rss/search?q=site:dailyinvestor.com&hl=en-ZA&gl=ZA&ceid=ZA:en';
         const feed = await parser.parseURL(feedUrl);
 
-        const items = await Promise.all(
-            feed.items.map((item) =>
-                cache.tryGet(item.link + ':v1', async () => {
-                    try {
-                        const response = await ofetch(item.link, {
-                            headers: {
-                                'User-Agent': config.trueUA,
-                            },
-                        });
-                        const $ = load(response);
-
-                        // Clean up
-                        $('.entry-header').remove();
-                        $('.share-article').remove();
-                        $('.post-meta').remove();
-
-                        const description = $('.entry-content').html();
-
-                        return {
-                            title: item.title,
-                            link: item.link,
-                            pubDate: item.pubDate,
-                            description,
-                            author: item.creator,
-                            category: item.categories,
-                        };
-                    } catch (e) {
-                        return {
-                            title: item.title,
-                            link: item.link,
-                            pubDate: item.pubDate,
-                            description: item.contentSnippet || item.description,
-                        };
-                    }
-                })
-            )
-        );
-
         return {
-            title: feed.title,
-            link: feed.link,
-            description: feed.description,
-            item: items,
+            title: 'Daily Investor Latest News',
+            link: 'https://dailyinvestor.com/',
+            description: 'Latest investment and business news from Daily Investor South Africa via Google News',
+            item: feed.items.map((item) => ({
+                title: item.title,
+                link: item.link,
+                pubDate: item.pubDate,
+                author: item.creator,
+                category: item.categories,
+                description: item['content:encoded'] || item.content || item.description || item.contentSnippet,
+            })),
         };
     },
 };
