@@ -56,55 +56,57 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v9', async () => {
+                cache.tryGet(item.link + ':v10', async () => {
+                    // Extract WordPress post ID from the GUID URL (e.g. https://maroelamedia.co.za/?p=784111)
+                    const postId = item.guid?.match(/[?&]p=(\d+)/)?.[1];
+
+                    // Fallback: use the RSS snippet if the API call fails
+                    let description: string | undefined = item.content || item.contentSnippet;
                     let image: string | undefined;
-                    try {
-                        item.author = 'Maroela Media';
-                        const response = await ofetch(item.link, {
-                            headers: {
-                                'User-Agent': config.trueUA,
-                            },
-                        });
-                        const $ = load(response);
+                    let enclosureType = 'image/jpeg';
 
-                        let content = $('.entry-content, [itemprop="articleBody"], .post-content').first();
+                    if (postId) {
+                        try {
+                            const post = await ofetch(`https://maroelamedia.co.za/wp-json/wp/v2/posts/${postId}?_embed=wp:featuredmedia`, {
+                                headers: { 'User-Agent': config.trueUA },
+                            });
 
-                        if (!content.length) {
-                            content = $('article section').first();
+                            // Full article content — clean up unwanted elements
+                            if (post.content?.rendered) {
+                                const $ = load(post.content.rendered);
+                                $('.verwante-artikels, .ad-banner, script, iframe, .artikel-knoppies-lys, .single-tags').remove();
+                                description = $.html();
+                            }
+
+                            // Full-resolution featured image from the embedded media object
+                            const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
+                            if (featuredMedia?.source_url) {
+                                image = featuredMedia.source_url;
+                                enclosureType = featuredMedia.mime_type || 'image/jpeg';
+                            }
+
+                            // Prepend image to description if not already present
+                            if (image && description && !description.includes(image)) {
+                                description = `<img src="${image}"><br>${description}`;
+                            }
+                        } catch {
+                            // Keep fallback values from the RSS feed
                         }
-                        if (!content.length) {
-                            content = $('article');
-                        }
-
-                        // Clean up
-                        content.find('.verwante-artikels, .ad-banner, script, iframe, .artikel-knoppies-lys, .single-tags').remove();
-
-                        const fullContent = content.html();
-                        if (fullContent) {
-                            item.description = fullContent;
-                        }
-
-                        // Image
-                        image = $('meta[property="og:image"]').attr('content');
-                        if (image && item.description && !item.description.includes(image)) {
-                            item.description = `<img src="${image}"><br>${item.description}`;
-                        }
-                    } catch {
-                        // Fallback
                     }
+
                     return {
                         title: item.title,
                         link: item.link,
-                        description: item.description,
+                        description,
                         pubDate: item.pubDate,
-                        author: item.author,
-                        category: item.category,
+                        author: item.creator || 'Maroela Media',
+                        category: item.categories,
                         image,
                         media: image
                             ? {
                                   content: {
                                       url: image,
-                                      type: 'image/jpeg',
+                                      type: enclosureType,
                                       medium: 'image',
                                   },
                               }
