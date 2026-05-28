@@ -4,7 +4,6 @@ import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
-import { parseDate } from '@/utils/parse-date';
 import parser from '@/utils/rss-parser';
 
 export const route: Route = {
@@ -51,112 +50,87 @@ export const route: Route = {
     maintainers: ['FrancoBenedetti'],
     handler: async (ctx) => {
         const category = ctx.req.param('category');
+        const feedUrl = category ? `https://maroelamedia.co.za/kategorie/${category}/feed/` : 'https://maroelamedia.co.za/feed/';
 
-        // Fast path: use the WP REST API to fetch 15 articles in a single request.
-        // This avoids the 429 Too Many Requests errors caused by fetching 15 pages/APIs concurrently.
-        try {
-            let categoryId: number | undefined;
-            if (category) {
-                categoryId = await cache.tryGet(`maroelamedia:category:${category}`, async () => {
-                    const cats = await ofetch(`https://maroelamedia.co.za/wp-json/wp/v2/categories?slug=${category}`, {
-                        headers: { 'User-Agent': config.trueUA },
-                    });
-                    return cats?.[0]?.id;
-                });
-                if (!categoryId) {
-                    throw new Error(`Category ${category} not found`);
-                }
-            }
+        const feed = await parser.parseURL(feedUrl);
 
-            const postsUrl = new URL('https://maroelamedia.co.za/wp-json/wp/v2/posts');
-            postsUrl.searchParams.append('per_page', '15');
-            postsUrl.searchParams.append('_embed', '1');
-            if (categoryId) {
-                postsUrl.searchParams.append('categories', categoryId.toString());
-            }
+        const items = await Promise.all(
+            feed.items.slice(0, 15).map(async (item) => {
+                try {
+                    // We throw errors inside tryGet if scraping fails.
+                    // This ensures that failed fetches (like 429 rate limits during a cold cache stampede)
+                    // are NOT cached forever. The outer catch block handles the fallback to the RSS snippet.
+                    return await cache.tryGet(item.link + ':v14', async () => {
+                        const response = await ofetch(item.link, {
+                            headers: {
+                                'User-Agent': config.trueUA,
+                            },
+                        });
+                        const $ = load(response);
 
-            const posts = await ofetch(postsUrl.toString(), {
-                headers: { 'User-Agent': config.trueUA },
-            });
+                        let content = $('.entry-content, [itemprop="articleBody"], .post-content').first();
 
-            const items = posts.map((post) => {
-                let description = post.content?.rendered || '';
-                let image: string | undefined;
-                let enclosureType = 'image/jpeg';
-
-                if (description) {
-                    const $ = load(description);
-                    $('.verwante-artikels, .ad-banner, script, iframe, .artikel-knoppies-lys, .single-tags').remove();
-                    description = $.html();
-                }
-
-                const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
-                if (featuredMedia?.source_url) {
-                    image = featuredMedia.source_url;
-                    enclosureType = featuredMedia.mime_type || 'image/jpeg';
-                }
-
-                if (image && description && !description.includes(image)) {
-                    description = `<img src="${image}"><br>${description}`;
-                }
-
-                const categories: string[] = [];
-                const terms = post._embedded?.['wp:term'] || [];
-                for (const termGroup of terms) {
-                    for (const t of termGroup) {
-                        if (t.taxonomy === 'category' || t.taxonomy === 'post_tag') {
-                            categories.push(t.name);
+                        if (!content.length) {
+                            content = $('article section').first();
                         }
-                    }
+                        if (!content.length) {
+                            content = $('article');
+                        }
+
+                        // Clean up unwanted elements
+                        content.find('.verwante-artikels, .ad-banner, script, iframe, .artikel-knoppies-lys, .single-tags').remove();
+
+                        let description = content.html() || '';
+
+                        // Image extraction
+                        const image = $('meta[property="og:image"]').attr('content');
+                        if (image && description && !description.includes(image)) {
+                            description = `<img src="${image}"><br>${description}`;
+                        }
+
+                        if (!description) {
+                            throw new Error('Failed to extract full description');
+                        }
+
+                        return {
+                            title: item.title,
+                            link: item.link,
+                            description,
+                            pubDate: item.pubDate,
+                            author: item.creator || 'Maroela Media',
+                            category: item.categories,
+                            image,
+                            media: image
+                                ? {
+                                      content: {
+                                          url: image,
+                                          type: 'image/jpeg',
+                                          medium: 'image',
+                                      },
+                                  }
+                                : undefined,
+                        };
+                    });
+                } catch {
+                    // Fallback block outside tryGet: If fetching fails, return the RSS snippet.
+                    // Since it's outside tryGet, this fallback snippet is NOT cached and will be retried later.
+                    return {
+                        title: item.title,
+                        link: item.link,
+                        description: item.content || item.contentSnippet,
+                        pubDate: item.pubDate,
+                        author: item.creator || 'Maroela Media',
+                        category: item.categories,
+                    };
                 }
+            })
+        );
 
-                const author = post._embedded?.author?.[0]?.name || 'Maroela Media';
-
-                return {
-                    title: post.title?.rendered,
-                    link: post.link,
-                    description,
-                    pubDate: parseDate(post.date_gmt || post.date),
-                    author,
-                    category: categories,
-                    image,
-                    media: image
-                        ? {
-                              content: {
-                                  url: image,
-                                  type: enclosureType,
-                                  medium: 'image',
-                              },
-                          }
-                        : undefined,
-                };
-            });
-
-            return {
-                title: `Nuus | Maroela Media${category ? ` - ${category}` : ''}`,
-                link: category ? `https://maroelamedia.co.za/kategorie/${category}/` : 'https://maroelamedia.co.za/',
-                description: 'gratis Afrikaanse nuus en kuierplek - gebalanseerd en betroubaar - Powered by RSSHub',
-                item: items,
-            };
-        } catch {
-            // Fallback: If WP API is blocked or errors out, fallback to the standard RSS feed parsing.
-            // This guarantees the route won't crash, even if images/full text are missing.
-            const feedUrl = category ? `https://maroelamedia.co.za/kategorie/${category}/feed/` : 'https://maroelamedia.co.za/feed/';
-            const feed = await parser.parseURL(feedUrl);
-
-            return {
-                title: feed.title,
-                link: feed.link,
-                description: feed.description,
-                item: feed.items.map((item) => ({
-                    title: item.title,
-                    link: item.link,
-                    description: item.content || item.contentSnippet,
-                    pubDate: item.pubDate,
-                    author: item.creator || 'Maroela Media',
-                    category: item.categories,
-                })),
-            };
-        }
+        return {
+            title: feed.title,
+            link: feed.link,
+            description: feed.description,
+            item: items,
+        };
     },
 };
