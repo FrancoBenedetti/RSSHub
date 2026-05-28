@@ -56,7 +56,8 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v8', async () => {
+                cache.tryGet(item.link + ':v9', async () => {
+                    let image: string | undefined;
                     try {
                         item.author = 'Maroela Media';
                         const response = await ofetch(item.link, {
@@ -84,7 +85,7 @@ export const route: Route = {
                         }
 
                         // Image
-                        const image = $('meta[property="og:image"]').attr('content');
+                        image = $('meta[property="og:image"]').attr('content');
                         if (image && item.description && !item.description.includes(image)) {
                             item.description = `<img src="${image}"><br>${item.description}`;
                         }
@@ -98,6 +99,16 @@ export const route: Route = {
                         pubDate: item.pubDate,
                         author: item.author,
                         category: item.category,
+                        image,
+                        media: image
+                            ? {
+                                  content: {
+                                      url: image,
+                                      type: 'image/jpeg',
+                                      medium: 'image',
+                                  },
+                              }
+                            : undefined,
                     };
                 })
             )
