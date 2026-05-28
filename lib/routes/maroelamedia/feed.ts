@@ -1,10 +1,10 @@
 import { load } from 'cheerio';
+import Parser from 'rss-parser';
 
 import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
-import parser from '@/utils/rss-parser';
 
 export const route: Route = {
     path: '/:category?',
@@ -52,15 +52,23 @@ export const route: Route = {
         const category = ctx.req.param('category');
         const feedUrl = category ? `https://maroelamedia.co.za/kategorie/${category}/feed/` : 'https://maroelamedia.co.za/feed/';
 
+        const parser = new Parser({
+            customFields: {
+                item: [['media:content', 'mediaContent']],
+            },
+            headers: {
+                'User-Agent': config.trueUA,
+            },
+        });
         const feed = await parser.parseURL(feedUrl);
 
         const items = await Promise.all(
-            feed.items.slice(0, 15).map(async (item) => {
+            feed.items.slice(0, 15).map(async (item: any) => {
                 try {
                     // We throw errors inside tryGet if scraping fails.
                     // This ensures that failed fetches (like 429 rate limits during a cold cache stampede)
                     // are NOT cached forever. The outer catch block handles the fallback to the RSS snippet.
-                    return await cache.tryGet(item.link + ':v14', async () => {
+                    return await cache.tryGet(item.link + ':v15', async () => {
                         const response = await ofetch(item.link, {
                             headers: {
                                 'User-Agent': config.trueUA,
@@ -83,13 +91,32 @@ export const route: Route = {
                         let description = content.html() || '';
 
                         // Image extraction
-                        const image = $('meta[property="og:image"]').attr('content');
+                        let image = $('meta[property="og:image"]').attr('content');
+
+                        // If no image from HTML scrape, use the fallback from the original RSS feed
+                        if (!image && item.mediaContent?.$?.url) {
+                            image = item.mediaContent.$.url;
+                        }
+
                         if (image && description && !description.includes(image)) {
                             description = `<img src="${image}"><br>${description}`;
                         }
 
                         if (!description) {
                             throw new Error('Failed to extract full description');
+                        }
+
+                        // Prepare media object using fallback description if available
+                        const media: Record<string, Record<string, string>> = {};
+                        if (image) {
+                            media.content = {
+                                url: image,
+                                type: 'image/jpeg',
+                                medium: 'image',
+                            };
+                            if (item.mediaContent?.['media:description']?.[0]?._) {
+                                media.description = { children: item.mediaContent['media:description'][0]._ };
+                            }
                         }
 
                         return {
@@ -100,20 +127,25 @@ export const route: Route = {
                             author: item.creator || 'Maroela Media',
                             category: item.categories,
                             image,
-                            media: image
-                                ? {
-                                      content: {
-                                          url: image,
-                                          type: 'image/jpeg',
-                                          medium: 'image',
-                                      },
-                                  }
-                                : undefined,
+                            media: Object.keys(media).length > 0 ? media : undefined,
                         };
                     });
                 } catch {
                     // Fallback block outside tryGet: If fetching fails, return the RSS snippet.
                     // Since it's outside tryGet, this fallback snippet is NOT cached and will be retried later.
+
+                    const media: Record<string, Record<string, string>> = {};
+                    if (item.mediaContent?.$?.url) {
+                        media.content = {
+                            url: item.mediaContent.$.url,
+                            type: item.mediaContent.$.type || 'image/jpeg',
+                            medium: item.mediaContent.$.medium || 'image',
+                        };
+                        if (item.mediaContent['media:description']?.[0]?._) {
+                            media.description = { children: item.mediaContent['media:description'][0]._ };
+                        }
+                    }
+
                     return {
                         title: item.title,
                         link: item.link,
@@ -121,6 +153,7 @@ export const route: Route = {
                         pubDate: item.pubDate,
                         author: item.creator || 'Maroela Media',
                         category: item.categories,
+                        media: Object.keys(media).length > 0 ? media : undefined,
                     };
                 }
             })
