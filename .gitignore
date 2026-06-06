@@ -43,3 +43,6 @@ yarn-error.log
 
 dist-container
 src
+.env.db
+lib/xentara-routes/
+
