@@ -2,9 +2,9 @@ import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import { parseDate } from '@/utils/parse-date';
-import { getPuppeteerPage } from '@/utils/puppeteer';
+import { getPlaywrightPage } from '@/utils/playwright';
 
-import { apiqRootUrl, parseThumbnail, rootUrl, typeMap } from './utils';
+import { apiRootUrl, parseThumbnail, rootUrl, typeMap } from './utils';
 
 const sortMap = {
     date: 'Latest',
@@ -53,12 +53,12 @@ async function handler(ctx) {
     const { type = 'video', sort = 'date', rating = 'ecchi' } = ctx.req.param();
 
     const limit = ctx.req.query('limit') || 32;
-    const url = `${apiqRootUrl}/${type === 'video' ? 'videos' : 'images'}?sort=${sort}&rating=${rating}&limit=${limit}`;
+    const url = `${apiRootUrl}/${type === 'video' ? 'videos' : 'images'}?sort=${sort}&rating=${rating}&limit=${limit}`;
 
     const items = await cache.tryGet(
         `iwara:ranking:${type}:${sort}:${rating}`,
         async () => {
-            const { page, destroy } = await getPuppeteerPage(url, {
+            const { page, destroy } = await getPlaywrightPage(url, {
                 onBeforeLoad: async (page) => {
                     await page.setRequestInterception(true);
                     page.on('request', (request) => {

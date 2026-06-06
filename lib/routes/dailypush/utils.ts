@@ -1,11 +1,11 @@
 import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
-import type { Browser, Page } from 'rebrowser-puppeteer';
 
 import type { DataItem } from '@/types';
 import cache from '@/utils/cache';
 import logger from '@/utils/logger';
 import { parseRelativeDate } from '@/utils/parse-date';
+import type { Browser, Page } from '@/utils/playwright';
 
 export const BASE_URL = 'https://www.dailypush.dev';
 
@@ -143,7 +143,7 @@ function extractCategories(article: ReturnType<CheerioAPI>, $: CheerioAPI): stri
             const tagText = tagElement.text().trim();
 
             // Skip summary/stats links and navigation
-            if (tagHref && tagText && !tagHref.includes('article/') && !tagHref.includes('Summary') && tagText.length < 50 && !/^(Summary|stats|About|Tags|Toggle|Trending|Latest|Previous|Next)$/i.test(tagText)) {
+            if (tagHref && tagText && !tagHref.includes('article/') && !tagHref.includes('Summary') && tagText.length < 50 && !/^(?:Summary|stats|About|Tags|Toggle|Trending|Latest|Previous|Next)$/i.test(tagText)) {
                 return tagText;
             }
             return null;

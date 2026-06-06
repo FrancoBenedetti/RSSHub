@@ -2,7 +2,7 @@ import { load } from 'cheerio';
 
 import type { DataItem, Route } from '@/types';
 import { parseDate } from '@/utils/parse-date';
-import puppeteer from '@/utils/puppeteer';
+import playwright from '@/utils/playwright';
 
 export const route: Route = {
     path: '/track/:trackingNumber',
@@ -26,7 +26,7 @@ async function handler(ctx) {
     const { trackingNumber } = ctx.req.param();
     const url = `https://www.ups.com/track?loc=en_US&tracknum=${trackingNumber}`;
 
-    const browser = await puppeteer();
+    const browser = await playwright();
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
@@ -68,7 +68,7 @@ async function handler(ctx) {
 
         const dateTimeStr = dateTimeRaw
             .trim()
-            .replace(/(\d{1,}\/\d{1,}\/\d{4})(\d{1,}:\d{1,}\s[AP]\.?M\.?)/, '$1 $2')
+            .replace(/(\d+\/\d+\/\d{4})(\d+:\d+\s[AP]\.?M\.?)/, '$1 $2')
             .replaceAll('P.M.', 'PM')
             .replaceAll('A.M.', 'AM');
 
@@ -78,7 +78,7 @@ async function handler(ctx) {
             .find(`#stApp_milestoneActivityLocation${i}`)
             .text()
             .trim()
-            .replaceAll(/\s*\n+\s*/g, '\n');
+            .replaceAll(/\s*\n\s*/g, '\n');
 
         const lines = activityCellText
             .split('\n')
