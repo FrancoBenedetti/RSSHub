@@ -39,7 +39,7 @@ jobs:
             - name: Install dependencies (pnpm)
               run: pnpm i
             - name: Run postinstall script for dependencies
-              run: pnpm rb && pnpm exec playwright install chromium
+              run: pnpm rb && pnpm exec patchright install chromium
             - name: Build routes
               run: pnpm build
             - name: Build worker routes
@@ -52,7 +52,7 @@ jobs:
                   REDIS_URL: redis://localhost:${{ job.services.redis.ports['6379'] }}/
             - name: Upload coverage to Codecov
               if: ${{ matrix.node-version == 'lts/*' }}
-              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
               with:
                   token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos as documented, but seems broken
 
@@ -90,7 +90,7 @@ jobs:
               run: pnpm build
             - name: Install bundled Chromium
               if: ${{ matrix.chromium.dependency == '' }}
-              run: pnpm exec playwright install chromium
+              run: pnpm exec patchright install chromium
             - name: Install Chromium
               if: ${{ matrix.chromium.dependency != '' }}
               # 'chromium-browser' from Ubuntu APT repo is a dummy package. Its version (85.0.4183.83) means

@@ -51,7 +51,7 @@ const getCookie = (disableConfig = false) => {
                 waitForRequest = new Promise<string>((resolve) => {
                     page.on('requestfinished', async (request) => {
                         if (request.url() === 'https://api.bilibili.com/x/web-interface/nav') {
-                            const cookies = await page.cookies();
+                            const cookies = await page.context().cookies();
                             let cookieString = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
                             cookieString = cookieString.replace(/b_lsid=[0-9A-F]+_[0-9A-F]+/, `b_lsid=${utils.lsid()}`);
                             resolve(cookieString);
@@ -99,7 +99,7 @@ const getWbiVerifyString = () => {
         });
         const imgUrl = navResponse.data.wbi_img.img_url;
         const subUrl = navResponse.data.wbi_img.sub_url;
-        const r = imgUrl.slice(imgUrl.lastIndexOf('/') + 1).split('.')[0] + subUrl.slice(subUrl.lastIndexOf('/') + 1).split('.')[0];
+        const r = imgUrl.slice(imgUrl.lastIndexOf('/') + 1).split('.', 1)[0] + subUrl.slice(subUrl.lastIndexOf('/') + 1).split('.', 1)[0];
         // const { body: spaceResponse } = await got('https://space.bilibili.com/1', {
         //     headers: {
         //         Referer: 'https://www.bilibili.com/',
