@@ -131,3 +131,15 @@
 55. **Selective Cheerio Cleanup**: When using `$(...).find(...).remove()` to clean up scraped article content, carefully verify that none of the target selectors (e.g., container classes like `.wprt-container`) act as primary wrappers for the core article text. Overly broad structural selectors can cause the entire content body to be deleted unexpectedly.
 
 56. **Discoverable Parameter Options**: When a route parameter accepts a specific list of defined choices (like categories or sections), use the object syntax in the `parameters` block to explicitly list `options` (each with a `label` and `value`), rather than just mentioning them in a plain text string. This allows programmatic discovery of the supported route variations by end-users and tooling.
+
+### WordPress Sites
+
+57. **WordPress REST API Preferred**: WordPress sites expose a REST API at `/wp-json/wp/v2/posts`. Prefer this over scraping the HTML or even the native RSS feed (`/feed/`), because the REST API returns the full `content.rendered` HTML, author info, category metadata, and featured image data — all in a single request. Use `?_embed=1` to inline related resources (author, featured media, terms) and avoid extra roundtrips.
+
+58. **WordPress Category Filtering**: To filter WordPress REST API posts by category, first resolve the human-readable slug to a numeric ID via `/wp-json/wp/v2/categories?slug=<slug>&per_page=1`, then pass `categories=<id>` to the posts endpoint. Never hardcode category IDs — slugs are stable, IDs are not portable across installations.
+
+59. **WordPress Featured Image**: When using `?_embed=1`, the featured image is available at `post._embedded['wp:featuredmedia'][0].source_url` or the theme-injected `post.featured_image_src_large[0]` (an array of `[url, width, height, cropped]`). Always check `featured_image_src_large` first (faster, no nesting), then fall back to the embedded media object.
+
+60. **Cache Exemption for Full-Content APIs**: `cache.tryGet()` is required when fetching article details in a separate per-item HTTP request (to avoid hammering the server on every poll). It is NOT needed when the listing API already returns complete article content (e.g., WordPress REST API with `_embed=1`), since there are no follow-up requests to cache.
+
+61. **WordPress `image` vs `itunes_item_image`**: Use the `image` field on `DataItem` (not `itunes_item_image`) for the article thumbnail URL. Prepend `<img src="...">` to `description` as well, so feed readers that do not parse `image` still display the thumbnail inline in the article body.
