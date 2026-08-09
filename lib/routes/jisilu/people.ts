@@ -1,9 +1,10 @@
-import type { CheerioAPI } from 'cheerio';
+import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
+import type { Element } from 'domhandler';
 import type { Context } from 'hono';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 
@@ -21,7 +22,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         throw new InvalidParameterError('请填入合法的类型 id，可选值为 `questions` 即 `主题` 或 `answer` 即 `回复`，默认为空，即全部');
     }
 
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const targetUrl: string = new URL(`/people/${id}`, rootUrl).href;
 
@@ -39,7 +40,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const detailResponse = await ofetch(apiUrl);
     const $$: CheerioAPI = load(detailResponse);
 
-    const items: DataItem[] = await processItems($$, $$('*'), limit);
+    const items: DataItem[] = await processItems($$, $$('*') as Cheerio<Element>, limit);
 
     const author = $('meta[name="keywords"]').prop('content').split(/,/, 1)[0];
     const feedImage = $('div.aw-logo img').prop('src');
@@ -52,7 +53,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: feedImage,
         author,
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };

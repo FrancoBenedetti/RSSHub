@@ -2,14 +2,14 @@ import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Context } from 'hono';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id = 'trending' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '50', 10);
+    const limit = Number(ctx.req.query('limit') ?? '50');
 
     const apiSlug = 'wp-json/wp/v2';
     const baseUrl = 'https://indianexpress.com';
@@ -65,7 +65,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 text: description,
             },
             updated: updated ? parseDate(updated) : undefined,
-            language,
+            language: language as Language,
         };
 
         return processedItem;
@@ -81,7 +81,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: $('meta[property="og:image"]').attr('content'),
         author,
-        language,
+        language: language as Language,
         feedLink: $('link[type="application/rss+xml"]').attr('href'),
         id: $('meta[property="og:url"]').attr('content'),
     };

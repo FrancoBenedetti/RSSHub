@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
@@ -9,7 +9,7 @@ import { renderDescription } from './templates/description';
 
 export const handler = async (ctx) => {
     const { language = 'CN', category = 'paper' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 6;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 6;
 
     const rootUrl = 'https://www.dehenglaw.com';
     const currentUrl = new URL(`${language}/${category}/0008/000901.aspx`, rootUrl).href;
@@ -21,25 +21,25 @@ export const handler = async (ctx) => {
     let items = $('div.news_box ul li')
         .slice(0, limit)
         .toArray()
-        .map((item) => {
-            item = $(item);
+        .map((item): DataItem => {
+            const $item = $(item);
 
-            const title = item.find('h2').text();
+            const title = $item.find('h2').text();
             const description = renderDescription({
-                intro: item.find('div.deheng_newscontent p').text(),
+                intro: $item.find('div.deheng_newscontent p').text(),
             });
 
             return {
                 title,
                 description,
-                pubDate: parseDate(item.find('span').text(), 'YYYY/M/D'),
-                link: item.find('a').first().prop('href'),
+                pubDate: parseDate($item.find('span').text(), 'YYYY/M/D'),
+                link: $item.find('a').first().prop('href'),
             };
         });
 
     items = await Promise.all(
         items.map((item) =>
-            cache.tryGet(item.link, async () => {
+            cache.tryGet(item.link!, async () => {
                 const { data: detailResponse } = await got(item.link);
 
                 const $$ = load(detailResponse);
@@ -47,7 +47,7 @@ export const handler = async (ctx) => {
                 const description =
                     item.description +
                     renderDescription({
-                        description: $$('div.news_content').html(),
+                        description: $$('div.news_content').html() ?? undefined,
                     });
                 const image = $$('div.news_content img').prop('src');
 
@@ -70,7 +70,7 @@ export const handler = async (ctx) => {
     return {
         title: $('title')
             .text()
-            .replace(/\|.*$/, `| ${$('li.onthis').text()}`),
+            .replace(/\|.*$/, () => `| ${$('li.onthis').text()}`),
         description: $('meta[name="Description"]').prop('content'),
         link: currentUrl,
         item: items,

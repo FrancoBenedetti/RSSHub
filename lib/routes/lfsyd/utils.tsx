@@ -36,7 +36,7 @@ const ProcessFeed = async (cache, articleList) => {
     return items;
 };
 
-const ProcessForm = (form, type) => {
+const ProcessForm = (form, type?) => {
     const key = type ? '8a11ed3712b699e749185674f1dc20b4' : 'b8d5b38577b8bb382b0c783b474b95f9';
     form.key = key;
     form.timestamp = Math.floor(Date.now() / 1000);
@@ -76,8 +76,8 @@ const cleanHtml = (htmlString) => {
 
     $('.yingdi-video iframe').each((i, e) => {
         const bvid = $(e)
-            .attr('src')
-            .match(/bvid=(.*?)&/)[1];
+            .attr('src')!
+            .match(/bvid=(.*?)&/)![1];
         if (bvid) {
             const url = `https://www.bilibili.com/video/${bvid}`;
             $(e).after(

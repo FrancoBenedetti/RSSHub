@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import pMap from 'p-map';
 
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -35,9 +35,8 @@ async function handler() {
         const text = $e.text();
         const match = regexp.exec(text);
         if (match) {
-            let data;
             try {
-                data = JSON.parse(match[1]);
+                const data = JSON.parse(match[1]);
                 if (Array.isArray(data) && data.length === 2 && data[0] === 1) {
                     textList.push(data[1]);
                 }
@@ -71,7 +70,7 @@ async function handler() {
     const publicationSections = sections.filter((section) => section?.title === 'Publications');
     const posts = publicationSections
         .flatMap((section) => section?.posts ?? [])
-        .map((post) => ({
+        .map((post): DataItem => ({
             title: post.title,
             link: `https://www.anthropic.com/research/${post.slug.current}`,
             pubDate: parseDate(post.publishedOn),
@@ -80,8 +79,8 @@ async function handler() {
     const items = await pMap(
         posts,
         (item) =>
-            cache.tryGet(item.link, async () => {
-                const response = await ofetch(item.link);
+            cache.tryGet(item.link!, async () => {
+                const response = await ofetch(item.link!);
                 const $ = load(response);
 
                 const content = $('#main-content > article');

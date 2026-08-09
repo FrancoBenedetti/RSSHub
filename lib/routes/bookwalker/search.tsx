@@ -4,13 +4,13 @@ import type { Element } from 'domhandler';
 import type { Context } from 'hono';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { filter = 'order=sell_desc' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '24', 10);
+    const limit = Number(ctx.req.query('limit') ?? '24');
 
     const baseUrl = 'https://www.bookwalker.com.tw';
     const targetUrl: string = new URL(`search?${filter}`, baseUrl).href;
@@ -22,7 +22,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const items: DataItem[] = $('div.bwbook_package')
         .slice(0, limit)
         .toArray()
-        .map((el): Element => {
+        .map((el) => {
             const $el: Cheerio<Element> = $(el);
 
             const name: string = $el.find('h4.bookname').text();
@@ -57,7 +57,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 },
                 image,
                 banner: image,
-                language,
+                language: language as Language,
             };
 
             return processedItem;
@@ -71,7 +71,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: $('meta[property="og:image"]').attr('content'),
         author: $('meta[property="og:site_name"]').attr('content'),
-        language,
+        language: language as Language,
         id: $('meta[property="og:url"]').attr('content'),
     };
 };

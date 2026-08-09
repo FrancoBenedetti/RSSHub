@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -166,7 +166,7 @@ async function handler(ctx) {
     const feedTitle = channel.children('title').text();
     const feedLink = channel.children('link').text() || ROOT_URL;
 
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 20;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 20;
 
     const items = $('item')
         .toArray()
@@ -211,7 +211,7 @@ async function handler(ctx) {
         title: feedTitle || 'Le Monde in English',
         link: feedLink,
         description: feedTitle || 'Le Monde in English',
-        language: 'en',
+        language: 'en' as Language,
         item: items,
     };
 }

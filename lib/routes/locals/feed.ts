@@ -129,7 +129,14 @@ function getRequestHeaders(session: string) {
 }
 
 function extractAssetUrls(html: string) {
-    return [...new Set([...html.matchAll(/\/_build\/assets\/[^"'\s>]+\.js/g)].map((match) => match[0]))];
+    return [
+        ...new Set(
+            html
+                .matchAll(/\/_build\/assets\/[^"'\s>]+\.js/g)
+                .toArray()
+                .map((match) => match[0])
+        ),
+    ];
 }
 
 function extractFeedActionId(asset: string) {
@@ -357,7 +364,7 @@ async function requestServerFunction<T>(session: string, id: string, key: string
         throw new Error(`Unable to access the Locals server function (${response.status}).`);
     }
 
-    return parseUnknownResponse<T>(response._data, key);
+    return parseUnknownResponse<T>(response._data!, key);
 }
 
 function fetchCommunityInfo(community: string, session: string) {
@@ -405,13 +412,13 @@ async function fetchFeedData(communityId: number, community: string, session: st
             const existing = items.get(item.link);
             if (existing) {
                 existing.category = [...new Set([...(existing.category ?? []), ...(item.category ?? [])])];
-                existing.description = existing.description || item.description;
-                existing.itunes_item_image = existing.itunes_item_image || item.itunes_item_image;
+                existing.description ||= item.description;
+                existing.itunes_item_image ||= item.itunes_item_image;
             }
         }
     }
 
-    return [...items.values()];
+    return items.values().toArray();
 }
 
 async function handler(ctx) {

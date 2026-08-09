@@ -53,7 +53,7 @@ const customPreset: PresetFactory = presetHTML5.extend((tags) => ({
 
 export const handler = async (ctx) => {
     const { category = 'all', language = 'english' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 100;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 100;
 
     const rootUrl = 'https://www.counter-strike.net';
     const apiRootUrl = 'https://store.steampowered.com';
@@ -176,9 +176,9 @@ If you subscribe to [Updates in English](https://www.counter-strike.net/news/upd
         {
             source: ['www.counter-strike.net/news/:category'],
             target: (params, url) => {
-                url = new URL(url);
+                const parsedUrl = new URL(url);
                 const category = params.category;
-                const language = url.searchParams.get('l');
+                const language = parsedUrl.searchParams.get('l');
 
                 return `/news${category ? `/${category}${language ? `/${language}` : ''}` : ''}`;
             },

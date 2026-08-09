@@ -43,7 +43,7 @@ const COLUMNS: Record<string, { title: string; description: string }> = {
 };
 
 const handler: Route['handler'] = async (ctx) => {
-    const columnParam = ctx.req.param('column');
+    const columnParam = ctx.req.param('column')!;
     if (COLUMNS[columnParam] === undefined) {
         throw new NotFoundError(`The column ${columnParam} does not exist`);
     }
@@ -122,7 +122,7 @@ export const route: Route = {
         supportPodcast: false,
         supportScihub: false,
     },
-    example: '/department/postgraduate/2701',
+    example: '/nwnu/department/postgraduate/2701',
     radar: [
         {
             source: ['yjsy.nwnu.edu.cn/:column/list.htm'],

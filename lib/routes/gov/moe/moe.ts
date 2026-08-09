@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import logger from '@/utils/logger';
@@ -16,7 +16,7 @@ const typesIdMap = [
 ];
 
 export const route: Route = {
-    path: '/moe/:type',
+    path: '/:type',
     categories: ['government'],
     example: '/gov/moe/policy_anal',
     parameters: { type: '分类名' },
@@ -42,15 +42,17 @@ async function handler(ctx) {
     let name = '';
 
     for (const item of typesIdMap) {
-        if (item.type === type) {
-            id = item.id;
-            name = item.name;
+        if (item.type !== type) {
+            continue;
         }
+
+        id = item.id;
+        name = item.name;
     }
 
     if (id === '') {
         logger.error('The given type not found.');
-        return;
+        return null;
     }
 
     const response = await got(moeUrl);
@@ -63,10 +65,10 @@ async function handler(ctx) {
         link: moeUrl,
         item: await Promise.all(
             newsLis.toArray().map(async (item) => {
-                item = $(item);
+                const $item = $(item);
 
-                const firstA = item.find('a');
-                const itemUrl = new URL(firstA.attr('href'), moeUrl).href;
+                const firstA = $item.find('a');
+                const itemUrl = new URL(firstA.attr('href')!, moeUrl).href;
 
                 // some live pages have no content, just return the liva page url
                 const infos = itemUrl.includes('/live/')
@@ -74,7 +76,7 @@ async function handler(ctx) {
                           description: firstA.html(),
                       }
                     : await cache.tryGet(itemUrl, async () => {
-                          const res = {};
+                          const res: { description?: DataItem['description'] } = {};
                           const response = await got({
                               method: 'get',
                               url: itemUrl,
@@ -99,7 +101,7 @@ async function handler(ctx) {
                     title: firstA.text(),
                     description: infos.description,
                     link: itemUrl,
-                    pubDate: parseDate(item.find('span').text(), 'MM-DD'),
+                    pubDate: parseDate($item.find('span').text(), 'MM-DD'),
                 };
             })
         ),
