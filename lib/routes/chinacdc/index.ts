@@ -3,7 +3,7 @@ import { load } from 'cheerio';
 import type { Element } from 'domhandler';
 import type { Context } from 'hono';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -13,7 +13,7 @@ import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { category = 'zxyw' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '11', 10);
+    const limit = Number(ctx.req.query('limit') ?? '11');
 
     const rootUrl = 'https://www.chinacdc.cn';
     const targetUrl: string = new URL(category.endsWith('/') ? category : `${category}/`, rootUrl).href;
@@ -67,7 +67,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 },
                 image,
                 banner: image,
-                language,
+                language: language as Language,
                 media: Object.keys(media).length > 0 ? media : undefined,
             };
         });
@@ -80,7 +80,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 }
 
                 return cache.tryGet(item.link, async (): Promise<DataItem> => {
-                    const detailResponse = await ofetch(item.link);
+                    const detailResponse = await ofetch(item.link!);
                     const $$: CheerioAPI = load(detailResponse);
 
                     const detailTitle: string = $$('h5').text();
@@ -102,7 +102,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                         },
                         image: item.image,
                         banner: item.banner,
-                        language,
+                        language: language as Language,
                         media: item.media,
                     };
                 });
@@ -122,7 +122,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: feedImage,
         author,
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };

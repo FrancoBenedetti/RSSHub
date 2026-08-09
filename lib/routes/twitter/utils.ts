@@ -11,7 +11,8 @@ const getOriginalImg = (url) => {
             format = 'jpg';
         }
         return `${m[1]}?format=${format}&name=orig`;
-    } else if ((m = url.match(/^(https?:\/\/\w+\.twimg\.com\/[^?]+)(\?.+)$/i))) {
+    }
+    if ((m = url.match(/^(https?:\/\/\w+\.twimg\.com\/[^?]+)(\?.+)$/i))) {
         const pars = getQueryParams(url);
         if (!pars.format || !pars.name) {
             return url;
@@ -20,9 +21,8 @@ const getOriginalImg = (url) => {
             return url;
         }
         return m[1] + '?format=' + pars.format + '&name=orig';
-    } else {
-        return url;
     }
+    return url;
 };
 const replaceBreak = (text) => text.replaceAll(/<br><br>|<br>/g, ' ');
 const quoteSeparator = "<hr style='border:0;border-top:1px solid #80808030;margin:12px 0;'>";
@@ -33,7 +33,7 @@ const formatText = (item) => {
     const urls = item.entities.urls || [];
     for (const url of urls) {
         // trim link pointing to the tweet itself (usually appears when the tweet is truncated)
-        text = text.replaceAll(url.url, url.expanded_url?.endsWith(id_str) ? '' : url.expanded_url);
+        text = text.replaceAll(url.url, () => (url.expanded_url?.endsWith(id_str) ? '' : url.expanded_url));
     }
     const media = item.extended_entities?.media || [];
     for (const m of media) {
@@ -42,7 +42,7 @@ const formatText = (item) => {
     return text.trim().replaceAll('\n', '<br>');
 };
 
-const ProcessFeed = (ctx, { data = [] }, params = {}) => {
+const ProcessFeed = (ctx, { data = [] as any[] }, params = {} as Record<string, any>) => {
     // undefined and strings like "exclude_rts_replies" is also safely parsed, so no if branch is needed
     const routeParams = new URLSearchParams(ctx.req.param('routeParams'));
 
@@ -99,7 +99,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
 
     const formatVideo = (media, extraAttrs = '') => {
         let content = '';
-        let bestVideo = null;
+        let bestVideo: any = null;
 
         for (const item of media.video_info.variants) {
             if (!bestVideo || (item.bitrate || 0) > (bestVideo.bitrate || -Infinity)) {
@@ -212,7 +212,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         }
         const originalItem = item;
         item = item.retweeted_status || item;
-        item.full_text = item.full_text || item.text;
+        item.full_text ||= item.text;
         item.full_text = formatText(item);
         const img = formatMedia(item);
         let picsPrefix = generatePicsPrefix(item);
@@ -224,7 +224,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             const quoteData = item.quoted_status;
 
             if (quoteData?.user) {
-                quoteData.full_text = quoteData.full_text || quoteData.text;
+                quoteData.full_text ||= quoteData.text;
                 const author = quoteData.user;
                 if (!readable) {
                     quote += quoteSeparator;
@@ -389,7 +389,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
 
         description += item.full_text;
         // 从 description 提取 话题作为 category，放在此处是为了避免 匹配到 quote 中的 # 80808030 颜色字符
-        const category = description.match(/(\s)?(#[^\s;<]+)/g)?.map((e) => e?.match(/#([^\s<]+)/)?.[1]);
+        const category = description.match(/(\s)?(#[^\s;<]+)/g)?.map((e) => e?.match(/#([^\s<]+)/)?.[1]) as string[] | undefined;
         description += img;
         description += quote;
         if (readable) {
@@ -477,7 +477,7 @@ const parseRouteParams = (routeParams) => {
 
         default: {
             const parsed = new URLSearchParams(routeParams);
-            count = fallback(undefined, queryToInteger(parsed.get('count')));
+            count = fallback(undefined, queryToInteger(parsed.get('count')), undefined);
             include_replies = fallback(undefined, queryToBoolean(parsed.get('includeReplies')), false);
             include_rts = fallback(undefined, queryToBoolean(parsed.get('includeRts')), true);
             force_web_api = fallback(undefined, queryToBoolean(parsed.get('forceWebApi')), false);
@@ -488,7 +488,7 @@ const parseRouteParams = (routeParams) => {
 };
 
 export const excludeRetweet = function (tweets) {
-    const excluded = [];
+    const excluded: any[] = [];
     for (const t of tweets) {
         if (t.retweeted_status) {
             continue;
@@ -502,6 +502,8 @@ export const keepOnlyMedia = function (tweets) {
     const excluded = tweets.filter((t) => t.extended_entities && t.extended_entities.media);
     return excluded;
 };
+
+export const getTwitterUserCacheKey = (id: string, operationName: string, params: Record<string, unknown> | undefined) => `twitter:${id}:${operationName}:${JSON.stringify(params)}`;
 
 export default {
     ProcessFeed,

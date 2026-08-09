@@ -1,6 +1,6 @@
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -64,7 +64,7 @@ async function handler(ctx) {
             'filter[until]': 0,
             id: symbol.toLowerCase(),
             include: 'author,primaryTickers,secondaryTickers,sentiments',
-            'page[size]': ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : category === 'news' ? 40 : 20,
+            'page[size]': ctx.req.query('limit') ? Number(ctx.req.query('limit')) : category === 'news' ? 40 : 20,
             'page[number]': 1,
         },
     });
@@ -121,6 +121,6 @@ async function handler(ctx) {
         image: 'https://seekingalpha.com/samw/static/images/favicon.svg',
         item: items,
         allowEmpty: true,
-        language: 'en-US',
+        language: 'en-us' as Language,
     };
 }

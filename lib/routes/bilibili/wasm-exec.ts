@@ -1,8 +1,18 @@
-// oxlint-disable unicorn/prefer-math-trunc unicorn-js/no-this-outside-of-class unicorn-js/no-array-from-fill
+// @ts-nocheck https://github.com/golang/go/blob/master/lib/wasm/wasm_exec.js
+// oxlint-disable unicorn/prefer-math-trunc
+// oxlint-disable unicorn-js/no-this-outside-of-class
+// oxlint-disable unicorn-js/no-array-from-fill
+// oxlint-disable unicorn-js/no-global-object-property-assignment
+// oxlint-disable unicorn-js/no-unnecessary-global-this
+// oxlint-disable unicorn-js/no-undeclared-class-members
+// oxlint-disable unicorn-js/prefer-array-from-map
+// oxlint-disable unicorn-js/require-array-sort-compare
+// oxlint-disable unicorn-js/prefer-short-arrow-method
+// oxlint-disable unicorn-js/prefer-block-statement-over-iife
 // oxlint-disable no-unused-vars
+// oxlint-disable unicorn/consistent-function-scoping
 /* eslint-disable prefer-rest-params */
 /* eslint-disable default-case */
-// oxlint-disable unicorn/consistent-function-scoping
 /* eslint-disable no-console */
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -165,7 +175,7 @@
         throw new Error('globalThis.TextDecoder is not available, polyfill required');
     }
 
-    const encoder = new TextEncoder('utf-8');
+    const encoder = new TextEncoder();
     const decoder = new TextDecoder('utf-8');
 
     globalThis.Go = class {
@@ -589,7 +599,7 @@
 
             const argc = this.argv.length;
 
-            const argvPtrs = [];
+            const argvPtrs: number[] = [];
             for (const arg of this.argv) {
                 argvPtrs.push(strPtr(arg));
             }

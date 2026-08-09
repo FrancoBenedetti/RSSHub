@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -9,7 +9,7 @@ import { renderDescription } from './templates/description';
 
 export const handler = async (ctx) => {
     const { tag } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 1;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 1;
 
     const rootUrl = 'https://www.deeplearning.ai';
     const currentUrl = new URL(`the-batch${tag ? `/tag/${tag.replace(/^tag\//, '').replace(/\/$/, '')}` : ''}/`, rootUrl).href;
@@ -55,7 +55,7 @@ export const handler = async (ctx) => {
             },
             image,
             banner: image,
-            language,
+            language: language as Language,
         };
     });
 
@@ -73,14 +73,15 @@ export const handler = async (ctx) => {
                 const $$ = load(post.html);
 
                 $$('a').each((_, ele) => {
-                    if (ele.attribs.href?.includes('utm_campaign')) {
-                        const url = new URL(ele.attribs.href);
-                        url.searchParams.delete('utm_campaign');
-                        url.searchParams.delete('utm_source');
-                        url.searchParams.delete('utm_medium');
-                        url.searchParams.delete('_hsenc');
-                        ele.attribs.href = url.href;
+                    if (!ele.attribs.href?.includes('utm_campaign')) {
+                        return;
                     }
+                    const url = new URL(ele.attribs.href);
+                    url.searchParams.delete('utm_campaign');
+                    url.searchParams.delete('utm_source');
+                    url.searchParams.delete('utm_medium');
+                    url.searchParams.delete('_hsenc');
+                    ele.attribs.href = url.href;
                 });
 
                 const title = post.title;
@@ -131,7 +132,7 @@ export const handler = async (ctx) => {
         allowEmpty: true,
         image,
         author: $('meta[property="og:site_name"]').prop('content'),
-        language,
+        language: language as Language,
     };
 };
 

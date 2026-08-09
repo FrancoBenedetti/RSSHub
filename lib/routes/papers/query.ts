@@ -1,4 +1,4 @@
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import { parseDate } from '@/utils/parse-date';
 import parser from '@/utils/rss-parser';
 
@@ -10,7 +10,7 @@ const pdfUrlGenerators = {
 
 export const handler = async (ctx) => {
     const { keyword = 'query/Detection' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 150;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 150;
 
     const rootUrl = 'https://papers.cool';
     const currentUrl = new URL(`arxiv/search?highlight=1&query=${keyword}&sort=0`, rootUrl).href;
@@ -38,7 +38,7 @@ export const handler = async (ctx) => {
         });
 
         return {
-            title,
+            title: title!,
             description,
             pubDate: parseDate(item.pubDate ?? ''),
             link: item.link,
@@ -51,7 +51,7 @@ export const handler = async (ctx) => {
                 html: description,
                 text: item.content,
             },
-            language,
+            language: language as Language,
             enclosure_url: pdfUrl,
             enclosure_type: 'application/pdf',
             enclosure_title: title,
@@ -59,7 +59,7 @@ export const handler = async (ctx) => {
     });
 
     return {
-        title: feed.title,
+        title: feed.title!,
         description: feed.description,
         link: currentUrl,
         item: items,

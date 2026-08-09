@@ -2,7 +2,7 @@ import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Context } from 'hono';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 
@@ -10,7 +10,7 @@ import { baseUrl, ProcessItems } from './util';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id = '0', pushed = '0' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '20', 10);
+    const limit = Number(ctx.req.query('limit') ?? '20');
 
     const targetUrl: string = new URL('article', baseUrl).href;
     const apiUrl: string = new URL(`article/getList/${id}`, baseUrl).href;
@@ -37,7 +37,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         item: items,
         allowEmpty: true,
         author: $('meta[name="keywords"]').attr('content')?.split(/,/, 1)[0] ?? undefined,
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };

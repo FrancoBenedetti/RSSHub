@@ -2,7 +2,7 @@ import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Context } from 'hono';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -13,7 +13,7 @@ import { baseUrl, imageBaseUrl } from './util';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id } = ctx.req.param();
-    const limit = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const targetUrl = new URL(`users/${id}/talks`, baseUrl).href;
     const apiUrl = new URL(`gapi/v1/users/${id}/talks`, baseUrl).href;
@@ -85,7 +85,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             image,
             banner: image,
             updated: pubDate ? parseDate(pubDate) : undefined,
-            language,
+            language: language as Language,
             description,
             content: {
                 html: description,
@@ -101,7 +101,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         item: items,
         allowEmpty: true,
         author: $('title').text().split(/\|/).pop()?.trim(),
-        language,
+        language: language as Language,
         id: $('meta[property="og:url"]').attr('content'),
     };
 };

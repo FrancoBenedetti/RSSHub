@@ -78,22 +78,20 @@ async function handler(ctx: Context): Promise<Data> {
     const listnRsp = await got(listUrl);
     const articleList = listnRsp.data.data.article_list;
 
-    let items = articleList.map(
-        (article): DataItem => ({
-            title: article.title,
-            link: article.url,
-            pubDate: timezone(parseDate(article.dspdate), +9),
-            category: article.categories.subcategory.map((cat) => cat.name),
-        })
-    );
+    let items = articleList.map((article): DataItem => ({
+        title: article.title,
+        link: article.url,
+        pubDate: timezone(parseDate(article.dspdate), 9),
+        category: article.categories.subcategory.map((cat) => cat.name),
+    }));
 
     items = await Promise.all(
         items.map((item: DataItem) =>
-            cache.tryGet(item.link, async () => {
+            cache.tryGet(item.link!, async () => {
                 const rsp = await got(item.link);
                 const content = load(rsp.data);
                 const nextData = JSON.parse(content('script#__NEXT_DATA__').text());
-                item.description = `<div lang="ja">${nextData.props.pageProps.data.content?.replaceAll('<img src="', `<img src="${apiUrl}/sitern/api/idolmaster/Image/get?path=`)}</div>`;
+                item.description = `<div lang="ja">${nextData.props.pageProps.data.content?.replaceAll('<img src="', () => `<img src="${apiUrl}/sitern/api/idolmaster/Image/get?path=`)}</div>`;
                 return item;
             })
         )

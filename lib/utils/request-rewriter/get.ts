@@ -13,6 +13,11 @@ type Get = typeof http.get | typeof https.get | typeof http.request | typeof htt
 
 interface ExtendedRequestOptions extends http.RequestOptions {
     headerGeneratorOptions?: Partial<HeaderGeneratorOptions>;
+    // legacy `url.parse()` shaped options, still accepted by node:http
+    href?: string;
+    search?: string;
+    query?: string | Record<string, any>;
+    headers?: http.OutgoingHttpHeaders;
 }
 
 const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
@@ -23,7 +28,7 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
         if (typeof args[0] === 'string' || args[0] instanceof URL) {
             url = new URL(args[0]);
             if (typeof args[1] === 'object') {
-                options = args[1];
+                options = args[1] as ExtendedRequestOptions;
                 callback = args[2];
             } else if (typeof args[1] === 'function') {
                 options = {};
@@ -46,7 +51,7 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
 
         logger.debug(`Outgoing request: ${options.method || 'GET'} ${url}`);
 
-        options.headers = options.headers || {};
+        options.headers ||= {};
         const headersLowerCaseKeys = new Set(Object.keys(options.headers).map((key) => key.toLowerCase()));
 
         // ua
@@ -58,8 +63,9 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
             }
 
             for (const header of HEADER_LIST) {
-                if (!headersLowerCaseKeys.has(header) && generatedHeaders[header]) {
-                    options.headers[header] = generatedHeaders[header];
+                const generatedHeader = generatedHeaders[header];
+                if (!headersLowerCaseKeys.has(header) && generatedHeader) {
+                    options.headers[header] = generatedHeader;
                 }
             }
         } else if (!headersLowerCaseKeys.has('user-agent')) {
@@ -81,7 +87,7 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
                 url.host !== proxy.proxyUrlHandler?.host &&
                 url.host !== 'localhost' &&
                 !url.host.startsWith('127.') &&
-                ![config.playwrightWSEndpoint, config.playwrightCDPEndpoint].some((endpoint) => endpoint?.includes(url.host))
+                [config.playwrightWSEndpoint, config.playwrightCDPEndpoint].every((endpoint) => !endpoint?.includes(url.host))
             ) {
                 options.agent = proxy.agent;
             }
@@ -92,6 +98,6 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
         const { headerGeneratorOptions, ...cleanOptions } = options;
 
         return Reflect.apply(origin, this, [url, cleanOptions, callback]) as ReturnType<typeof origin>;
-    };
+    } as unknown as typeof origin;
 
 export default getWrappedGet;

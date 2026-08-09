@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import { raw } from 'hono/html';
+import type { FC } from 'hono/jsx';
 import { renderToString } from 'hono/jsx/dom/server';
-import type { JSX } from 'hono/jsx/jsx-runtime';
 
 import type { Route } from '@/types';
 import { ViewType } from '@/types';
@@ -99,7 +99,7 @@ const renderDescription = ({ result }: ReutersContent): string => {
                 }
 
                 if (element.type === 'header') {
-                    const HeaderTag = `h${element.level ?? 1}` as keyof JSX.IntrinsicElements;
+                    const HeaderTag = `h${element.level ?? 1}` as unknown as FC;
                     return <HeaderTag key={`header-${index}`}>{element.content ? raw(element.content) : null}</HeaderTag>;
                 }
 
@@ -197,7 +197,6 @@ async function handler(ctx) {
     const browserHeaders = {
         Accept: 'application/json, text/plain, */*',
         'Accept-Language': 'en-US,en;q=0.9',
-        Referer: 'https://www.reuters.com/',
     };
 
     try {
@@ -222,33 +221,30 @@ async function handler(ctx) {
                     rootUrl,
                     response,
                 };
-            } else {
-                const rootUrl = 'https://www.reuters.com/pf/api/v3/content/fetch/articles-by-section-alias-or-id-v1';
-                const response = await ofetch(rootUrl, {
-                    query: {
-                        query: JSON.stringify({
-                            offset: 0,
-                            size: limit,
-                            section_id,
-                            website: 'reuters',
-                            ...(useSophi
-                                ? {
-                                      fetch_type: 'sophi',
-                                      sophi_page: '*',
-                                      sophi_widget: 'topic',
-                                  }
-                                : {}),
-                        }),
-                    },
-                    headers: browserHeaders,
-                });
-                return {
-                    title: response.result.section.title,
-                    description: response.result.section.section_about,
-                    rootUrl,
-                    response,
-                };
             }
+            const rootUrl = 'https://www.reuters.com/pf/api/v3/content/fetch/articles-by-section-alias-or-id-v1';
+            const response = await ofetch(rootUrl, {
+                query: {
+                    query: JSON.stringify({
+                        offset: 0,
+                        size: limit,
+                        section_id,
+                        website: 'reuters',
+                        ...(useSophi && {
+                            fetch_type: 'sophi',
+                            sophi_page: '*',
+                            sophi_widget: 'topic',
+                        }),
+                    }),
+                },
+                headers: browserHeaders,
+            });
+            return {
+                title: response.result.section.title,
+                description: response.result.section.section_about,
+                rootUrl,
+                response,
+            };
         })();
 
         let items = response.result.articles.map((e) => ({
@@ -369,5 +365,6 @@ async function handler(ctx) {
                 item: items.slice(0, limit),
             };
         }
+        return null;
     }
 }

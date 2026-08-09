@@ -1,7 +1,7 @@
 import type { HeaderGeneratorOptions } from 'header-generator';
 import { useRegisterRequest } from 'node-network-devtools';
 import { RateLimiterMemory, RateLimiterQueue } from 'rate-limiter-flexible';
-import type { RequestInfo, RequestInit } from 'undici';
+import type { RequestInfo, RequestInit, Response } from 'undici';
 import undici, { Request } from 'undici';
 
 import { config } from '@/config';
@@ -44,8 +44,9 @@ const wrappedFetch: typeof undici.fetch = async (input: RequestInfo, init?: Requ
         }
 
         for (const header of HEADER_LIST) {
-            if (!request.headers.has(header) && generatedHeaders[header]) {
-                request.headers.set(header, generatedHeaders[header]);
+            const headerValue = generatedHeaders[header];
+            if (!request.headers.has(header) && headerValue) {
+                request.headers.set(header, headerValue);
             }
         }
     } else if (!request.headers.get('user-agent')) {
@@ -68,7 +69,7 @@ const wrappedFetch: typeof undici.fetch = async (input: RequestInfo, init?: Requ
         request.headers.delete('x-prefer-proxy');
     }
 
-    config.enableRemoteDebugging && useCustomHeader(request.headers);
+    config.enableRemoteDebugging && useCustomHeader(request.headers as unknown as Headers);
 
     // proxy
     if (!init?.dispatcher && (proxy.proxyObj.strategy !== 'on_retry' || isRetry)) {
@@ -114,11 +115,10 @@ const wrappedFetch: typeof undici.fetch = async (input: RequestInfo, init?: Requ
                         }
                         logger.debug(`Retrying request with proxy ${nextProxy.uri}: ${request.url}`);
                         return attemptRequest(attempt + 1);
-                    } else {
-                        logger.warn('No more proxies available, trying without proxy');
-                        delete options.dispatcher;
-                        return attemptRequest(attempt + 1);
                     }
+                    logger.warn('No more proxies available, trying without proxy');
+                    delete options.dispatcher;
+                    return attemptRequest(attempt + 1);
                 }
             }
             throw error;
