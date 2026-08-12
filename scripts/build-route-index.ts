@@ -125,7 +125,7 @@ function parseRouteFile(text: string, fileName: string): RouteData | null {
         return null;
     }
     // Extract the metadata section (everything before `handler:`)
-    const metaSection = text.split(/handler\s*:/)[0];
+    const metaSection = text.split(/handler\s*:/, 1)[0];
     if (!metaSection) {
         return null;
     }
@@ -151,7 +151,7 @@ function parseApiRouteFile(text: string, fileName: string): ApiRouteData | null 
     if (!text.includes('export const apiRoute')) {
         return null;
     }
-    const metaSection = text.split(/handler\s*:/)[0];
+    const metaSection = text.split(/handler\s*:/, 1)[0];
     if (!metaSection) {
         return null;
     }
@@ -199,7 +199,7 @@ function buildIndex(): RouteIndex {
         .readdirSync(ROUTES_DIR, { withFileTypes: true })
         .filter((d) => d.isDirectory())
         .map((d) => d.name)
-        .toSorted();
+        .toSorted((a, b) => a.localeCompare(b));
 
     for (const nsDir of nsDirs) {
         const nsPath = path.join(ROUTES_DIR, nsDir);
@@ -243,7 +243,6 @@ function buildIndex(): RouteIndex {
             const apiRoute = parseApiRouteFile(text, relFile);
             if (apiRoute) {
                 apiRoutes.push(apiRoute);
-                continue;
             }
 
             // Otherwise: utility file, skip silently

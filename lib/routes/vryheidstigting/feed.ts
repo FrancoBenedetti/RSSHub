@@ -4,7 +4,6 @@ import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
-import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/artikels',
@@ -46,7 +45,7 @@ export const route: Route = {
                 const href = $(el).attr('href') || '';
                 return {
                     link: `${baseUrl}${href}`,
-                    title: $(el).text().trim() || href.replace('/', '').replace(/-/g, ' '),
+                    title: $(el).text().trim() || href.replace('/', '').replaceAll('-', ' '),
                 };
             })
             .filter((item) => item.title && item.link);
@@ -71,7 +70,7 @@ export const route: Route = {
                             link: item.link,
                             description: content,
                         };
-                    } catch (e) {
+                    } catch {
                         return item;
                     }
                 })
