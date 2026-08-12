@@ -1,8 +1,8 @@
 import type { Namespace } from '@/types';
 
 export const namespace: Namespace = {
-    name: 'Politicsweb',
-    url: 'politicsweb.co.za',
+    name: 'naamsa',
+    url: 'naamsa.net',
     categories: ['traditional-media'],
-    description: 'South African politics and opinion.',
+    description: 'The Automotive Business Council',
 };

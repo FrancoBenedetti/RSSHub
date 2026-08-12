@@ -35,32 +35,35 @@ export const route: Route = {
             const magFeed = await parser.parseURL(magFeedUrl);
             magItems = await Promise.all(
                 magFeed.items.slice(0, 10).map((item) =>
-                    cache.tryGet(item.link + ':v1', async () => {
+                    cache.tryGet((item.link ?? '') + ':v1', async () => {
                         try {
-                            const response = await ofetch(item.link, {
-                                headers: {
-                                    'User-Agent': config.trueUA,
-                                },
-                            });
-                            const $ = load(response);
-                            const content = $('.entry-content').html() || $('.wp-block-post-content').html() || item.content || item.contentSnippet;
+                            if (item.link) {
+                                const response = await ofetch(item.link, {
+                                    headers: {
+                                        'User-Agent': config.trueUA,
+                                    },
+                                });
+                                const $ = load(response);
+                                const content = $('.entry-content').html() || $('.wp-block-post-content').html() || item.content || item.contentSnippet;
 
-                            return {
-                                title: `[SA Grain Mag] ${item.title}`,
-                                link: item.link,
-                                description: content,
-                                pubDate: item.pubDate ? parseDate(item.pubDate) : undefined,
-                                author: item.creator || item.author,
-                                category: item.categories,
-                            };
+                                return {
+                                    title: `[SA Grain Mag] ${item.title ?? ''}`,
+                                    link: item.link,
+                                    description: content,
+                                    pubDate: item.pubDate ? parseDate(item.pubDate) : undefined,
+                                    author: item.creator || item.author,
+                                    category: item.categories,
+                                };
+                            }
                         } catch {
-                            return {
-                                title: `[SA Grain Mag] ${item.title}`,
-                                link: item.link,
-                                description: item.content || item.contentSnippet || item.title,
-                                pubDate: item.pubDate ? parseDate(item.pubDate) : undefined,
-                            };
+                            // Fallback
                         }
+                        return {
+                            title: `[SA Grain Mag] ${item.title ?? ''}`,
+                            link: item.link,
+                            description: item.content || item.contentSnippet || item.title,
+                            pubDate: item.pubDate ? parseDate(item.pubDate) : undefined,
+                        };
                     })
                 )
             );
@@ -87,7 +90,7 @@ export const route: Route = {
                     const title = titleNode.text().trim();
                     const link = titleNode.attr('href');
                     const metaText = node.find('small.color-grey').text().trim();
-                    const datePart = metaText.split('|')[0].trim();
+                    const datePart = metaText.split('|', 1)[0].trim();
                     const pubDate = datePart ? parseDate(datePart, 'DD MMMM YYYY') : undefined;
 
                     return {
@@ -102,9 +105,10 @@ export const route: Route = {
                     if (!item.link) {
                         return item;
                     }
-                    return cache.tryGet(item.link + ':v1', async () => {
+                    const link = item.link!;
+                    return cache.tryGet(link + ':v1', async () => {
                         try {
-                            const detailResponse = await ofetch(item.link, {
+                            const detailResponse = await ofetch(link, {
                                 headers: {
                                     'User-Agent': config.trueUA,
                                 },

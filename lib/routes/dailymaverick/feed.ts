@@ -1,4 +1,5 @@
 import { load } from 'cheerio';
+
 import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -62,18 +63,21 @@ export const route: Route = {
 
                         const title = $article('h1').first().text().trim();
                         const content = $article('article.article-container div.article-contents div.max-w-none').first();
-                        
+
                         // Clean up
                         content.find('.ad-container, .related-articles, .newsletter-signup, astro-island').remove();
 
                         return {
-                            title,
+                            title: title ?? '',
                             link: item.link,
                             description: content.html(),
                             author: $article('meta[name="author"]').attr('content') || $article('.author-link').text().trim(),
                         };
-                    } catch (e) {
-                        return item;
+                    } catch {
+                        return {
+                            title: '',
+                            link: item.link,
+                        };
                     }
                 })
             )

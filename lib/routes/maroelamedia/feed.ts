@@ -120,7 +120,7 @@ export const route: Route = {
                         }
 
                         return {
-                            title: item.title,
+                            title: item.title ?? '',
                             link: item.link,
                             description,
                             pubDate: item.pubDate,
@@ -147,7 +147,7 @@ export const route: Route = {
                     }
 
                     return {
-                        title: item.title,
+                        title: item.title ?? '',
                         link: item.link,
                         description: item.content || item.contentSnippet,
                         pubDate: item.pubDate,
@@ -160,7 +160,7 @@ export const route: Route = {
         );
 
         return {
-            title: feed.title,
+            title: feed.title ?? 'Maroela Media',
             link: feed.link,
             description: feed.description,
             item: items,

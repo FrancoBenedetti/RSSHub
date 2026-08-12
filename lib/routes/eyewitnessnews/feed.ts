@@ -52,9 +52,7 @@ export const route: Route = {
                         link: `${baseUrl}${link}`,
                     };
                 })
-                .filter((item, index, self): item is { title: string; link: string } => 
-                    item !== null && self.findIndex((t) => t?.link === item.link) === index
-                )
+                .filter((item, index, self): item is { title: string; link: string } => item !== null && self.findIndex((t) => t?.link === item.link) === index)
                 .slice(0, 20)
                 .map((item) =>
                     cache.tryGet(item.link + ':v1', async () => {
@@ -68,7 +66,8 @@ export const route: Route = {
                         $article('script, style, .ads, .social-share, footer, nav, .related-articles').remove();
 
                         const author = $article('meta[name="author"]').attr('content') || $article('.author').first().text().trim();
-                        const pubDate = parseDate($article('meta[property="article:published_time"]').attr('content'));
+                        const pubTime = $article('meta[property="article:published_time"]').attr('content');
+                        const pubDate = pubTime ? parseDate(pubTime) : undefined;
                         const image = $article('meta[property="og:image"]').attr('content');
 
                         let description = $article('.article-body, .entry-content, article').html() || '';
@@ -78,7 +77,7 @@ export const route: Route = {
                         }
 
                         return {
-                            title: item.title,
+                            title: item.title ?? '',
                             link: item.link,
                             description,
                             author,

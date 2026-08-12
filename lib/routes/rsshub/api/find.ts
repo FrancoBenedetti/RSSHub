@@ -15,18 +15,20 @@ try {
 
 export const apiRoute: APIRoute = {
     path: '/find',
-    categories: ['program-update'],
-    example: '/api/rsshub/find?s=lexlibertas',
     parameters: {
-        s: 'Namespace search string (matches namespace key, name, or URL)',
+        s: {
+            description: 'Namespace search string (matches namespace key, name, or URL)',
+        },
     },
-    name: 'Find Routes',
     maintainers: ['FrancoBenedetti'],
     handler: (ctx) => {
         const query = (ctx.req.query('s') || '').toLowerCase();
 
         if (!query || !routeIndex) {
-            return {};
+            return {
+                code: 0,
+                data: {},
+            };
         }
 
         const results: Record<string, any> = {};
@@ -37,6 +39,9 @@ export const apiRoute: APIRoute = {
             }
         }
 
-        return results;
+        return {
+            code: 0,
+            data: results,
+        };
     },
 };

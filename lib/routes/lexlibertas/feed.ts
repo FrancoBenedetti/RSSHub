@@ -59,7 +59,7 @@ export const route: Route = {
                         return null;
                     }
 
-                    const title = element.find('h1, h2, h3').first().text().trim() || element.text().trim().split('\n')[0];
+                    const title = element.find('h1, h2, h3').first().text().trim() || element.text().trim().split('\n', 1)[0];
 
                     return {
                         title: title || 'Untitled',
@@ -72,6 +72,9 @@ export const route: Route = {
                 .slice(0, 15)
                 .map((item) =>
                     cache.tryGet(item.link + ':v2', async () => {
+                        let description = '';
+                        let pubDate: Date | undefined;
+
                         try {
                             const articleResponse = await ofetch(item.link);
                             const $article = load(articleResponse);
@@ -83,7 +86,7 @@ export const route: Route = {
 
                             const fullContent = content.html();
                             if (fullContent) {
-                                item.description = fullContent;
+                                description = fullContent;
                             }
 
                             // Try to find a date in the text
@@ -91,18 +94,23 @@ export const route: Route = {
                                 .text()
                                 .match(/(\d{2}\/\d{2}\/\d{4})/);
                             if (dateMatch) {
-                                item.pubDate = parseDate(dateMatch[1], 'DD/MM/YYYY');
+                                pubDate = parseDate(dateMatch[1], 'DD/MM/YYYY');
                             }
 
                             // Image
                             const ogImage = $article('meta[property="og:image"]').attr('content');
-                            if (ogImage && item.description && !item.description.includes(ogImage)) {
-                                item.description = `<img src="${ogImage}"><br>${item.description}`;
+                            if (ogImage && description && !description.includes(ogImage)) {
+                                description = `<img src="${ogImage}"><br>${description}`;
                             }
                         } catch {
                             // Fallback
                         }
-                        return item;
+                        return {
+                            title: item.title,
+                            link: item.link,
+                            description,
+                            pubDate,
+                        };
                     })
                 )
         );

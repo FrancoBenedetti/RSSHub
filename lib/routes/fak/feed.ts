@@ -39,38 +39,40 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v2', async () => {
+                cache.tryGet((item.link ?? '') + ':v2', async () => {
                     try {
-                        const response = await ofetch(item.link, {
-                            headers: {
-                                'User-Agent': config.trueUA,
-                            },
-                        });
-                        const $ = load(response);
+                        if (item.link) {
+                            const response = await ofetch(item.link, {
+                                headers: {
+                                    'User-Agent': config.trueUA,
+                                },
+                            });
+                            const $ = load(response);
 
-                        let content = $('.entry-content, [itemprop="articleBody"], .post-content').first();
+                            let content = $('.entry-content, [itemprop="articleBody"], .post-content').first();
 
-                        if (!content.length) {
-                            content = $('article');
-                        }
+                            if (!content.length) {
+                                content = $('article');
+                            }
 
-                        // Clean up non-content elements
-                        content.find('script, iframe, .sharedaddy, .jp-relatedposts, .wpcnt, nav, .navigation').remove();
+                            // Clean up non-content elements
+                            content.find('script, iframe, .sharedaddy, .jp-relatedposts, .wpcnt, nav, .navigation').remove();
 
-                        const fullContent = content.html();
-                        if (fullContent) {
-                            item.description = fullContent;
-                        }
+                            const fullContent = content.html();
+                            if (fullContent) {
+                                item.description = fullContent;
+                            }
 
-                        const image = $('meta[property="og:image"]').attr('content');
-                        if (image && item.description && !item.description.includes(image)) {
-                            item.description = `<img src="${image}"><br>${item.description}`;
+                            const image = $('meta[property="og:image"]').attr('content');
+                            if (image && item.description && !item.description.includes(image)) {
+                                item.description = `<img src="${image}"><br>${item.description}`;
+                            }
                         }
                     } catch {
                         // Fallback to feed description
                     }
                     return {
-                        title: item.title,
+                        title: item.title ?? '',
                         link: item.link,
                         description: item.description,
                         pubDate: item.pubDate,

@@ -26,7 +26,8 @@ export const route: Route = {
     maintainers: ['FrancoBenedetti'],
     handler: async (ctx) => {
         const baseUrl = 'https://www.safetyhub.com';
-        const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit')) : 20;
+        const limitQuery = ctx.req.query('limit');
+        const limit = limitQuery ? Number.parseInt(limitQuery) : 20;
 
         const data = await ofetch(`${baseUrl}/wp-json/wp/v2/posts`, {
             query: {
@@ -35,7 +36,7 @@ export const route: Route = {
         });
 
         const items = data.map((item) => ({
-            title: item.title.rendered,
+            title: item.title?.rendered ?? '',
             description: item.content.rendered,
             pubDate: parseDate(item.date_gmt),
             link: item.link,

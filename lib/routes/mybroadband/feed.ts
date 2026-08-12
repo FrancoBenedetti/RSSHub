@@ -8,7 +8,7 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/news/:category?',
-    categories: ['technology'],
+    categories: ['new-media'],
     example: '/mybroadband/news',
     parameters: {
         category: {
@@ -89,7 +89,8 @@ export const route: Route = {
 
                         const title = $article('h1').text().trim();
                         const author = $article('.post-item__author').first().text().trim();
-                        const pubDate = parseDate($article('meta[property="article:published_time"]').attr('content'));
+                        const pubTime = $article('meta[property="article:published_time"]').attr('content');
+                        const pubDate = pubTime ? parseDate(pubTime) : undefined;
                         const image = $article('meta[property="og:image"]').attr('content');
 
                         let description = $article('.post-item__content').html() || $article('article').html() || '';
@@ -99,7 +100,7 @@ export const route: Route = {
                         }
 
                         return {
-                            title,
+                            title: title ?? '',
                             link: item.link,
                             description,
                             author,

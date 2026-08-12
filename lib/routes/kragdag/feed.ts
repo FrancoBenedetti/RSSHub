@@ -50,43 +50,45 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 15).map((item) =>
-                cache.tryGet(item.link + ':v3', async () => {
+                cache.tryGet((item.link ?? '') + ':v3', async () => {
                     try {
-                        const response = await ofetch(item.link, {
-                            headers: {
-                                'User-Agent': config.trueUA,
-                            },
-                        });
-                        const $ = load(response);
+                        if (item.link) {
+                            const response = await ofetch(item.link, {
+                                headers: {
+                                    'User-Agent': config.trueUA,
+                                },
+                            });
+                            const $ = load(response);
 
-                        let content = $('#post_body').first();
+                            let content = $('#post_body').first();
 
-                        if (!content.length) {
-                            content = $('.post_content').first();
-                        }
+                            if (!content.length) {
+                                content = $('.post_content').first();
+                            }
 
-                        // Clean up
-                        content
-                            .find(
-                                '.sharedaddy, .wpcnt, .jp-relatedposts, script, iframe, .ad-banner, .post_thumbnail, .post-ratings, .social_share_list, #social_share, .post_title, .post_dates, .post_author, .breadcrumb, nav.post_item, figure.post_thum, #about_author, .nav_link_box'
-                            )
-                            .remove();
+                            // Clean up
+                            content
+                                .find(
+                                    '.sharedaddy, .wpcnt, .jp-relatedposts, script, iframe, .ad-banner, .post_thumbnail, .post-ratings, .social_share_list, #social_share, .post_title, .post_dates, .post_author, .breadcrumb, nav.post_item, figure.post_thum, #about_author, .nav_link_box'
+                                )
+                                .remove();
 
-                        const fullContent = content.html();
-                        if (fullContent) {
-                            item.description = fullContent;
-                        }
+                            const fullContent = content.html();
+                            if (fullContent) {
+                                item.description = fullContent;
+                            }
 
-                        // Image extraction
-                        const ogImage = $('meta[property="og:image"]').attr('content');
-                        if (ogImage && item.description && !item.description.includes(ogImage)) {
-                            item.description = `<img src="${ogImage}"><br>${item.description}`;
+                            // Image extraction
+                            const ogImage = $('meta[property="og:image"]').attr('content');
+                            if (ogImage && item.description && !item.description.includes(ogImage)) {
+                                item.description = `<img src="${ogImage}"><br>${item.description}`;
+                            }
                         }
                     } catch {
                         // Fallback to what we have in the feed
                     }
                     return {
-                        title: item.title,
+                        title: item.title ?? '',
                         link: item.link,
                         guid: item.link,
                         description: item.description,

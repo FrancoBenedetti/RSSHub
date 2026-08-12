@@ -1,5 +1,5 @@
-import parser from '@/utils/rss-parser';
 import type { Route } from '@/types';
+import parser from '@/utils/rss-parser';
 
 export const route: Route = {
     path: '/latest',
@@ -26,11 +26,11 @@ export const route: Route = {
         const feed = await parser.parseURL(feedUrl);
 
         return {
-            title: feed.title,
+            title: feed.title ?? 'BizNews Latest',
             link: feed.link,
             description: feed.description,
             item: feed.items.map((item) => ({
-                title: item.title,
+                title: item.title ?? '',
                 link: item.link,
                 pubDate: item.pubDate,
                 description: item['content:encoded'] || item.content || item.description,

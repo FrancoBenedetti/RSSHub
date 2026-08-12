@@ -32,7 +32,7 @@ export const route: Route = {
             link: 'https://dailyinvestor.com/',
             description: 'Latest investment and business news from Daily Investor South Africa via Google News',
             item: feed.items.map((item) => ({
-                title: item.title,
+                title: item.title ?? '',
                 link: item.link,
                 pubDate: item.pubDate,
                 author: item.creator,

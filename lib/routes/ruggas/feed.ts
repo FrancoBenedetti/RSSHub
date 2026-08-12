@@ -32,34 +32,39 @@ export const route: Route = {
 
         const items = await Promise.all(
             feed.items.slice(0, 20).map((item) =>
-                cache.tryGet(item.link + ':v1', async () => {
+                cache.tryGet((item.link ?? '') + ':v1', async () => {
                     try {
-                        const response = await ofetch(item.link, {
-                            headers: {
-                                'User-Agent': config.trueUA,
-                            },
-                        });
-                        const $ = load(response);
+                        if (item.link) {
+                            const response = await ofetch(item.link, {
+                                headers: {
+                                    'User-Agent': config.trueUA,
+                                },
+                            });
+                            const $ = load(response);
 
-                        // Extract content from WordPress post
-                        const content = $('.entry-content').html() || item.content || item.contentSnippet;
+                            // Extract content from WordPress post
+                            const content = $('.entry-content').html() || item.content || item.contentSnippet;
 
-                        return {
-                            title: item.title,
-                            link: item.link,
-                            description: content,
-                            pubDate: item.pubDate,
-                            author: item.creator || item.author,
-                            category: item.categories,
-                        };
+                            return {
+                                title: item.title ?? '',
+                                link: item.link,
+                                description: content,
+                                pubDate: item.pubDate,
+                                author: item.creator || item.author,
+                                category: item.categories,
+                            };
+                        }
                     } catch {
-                        return {
-                            title: item.title,
-                            link: item.link,
-                            description: item.content || item.contentSnippet || item.title,
-                            pubDate: item.pubDate,
-                        };
+                        // Fallback
                     }
+                    return {
+                        title: item.title ?? '',
+                        link: item.link,
+                        description: item.content || item.contentSnippet || item.title,
+                        pubDate: item.pubDate,
+                        author: item.creator || item.author,
+                        category: item.categories,
+                    };
                 })
             )
         );

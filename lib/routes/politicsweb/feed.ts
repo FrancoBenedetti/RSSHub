@@ -8,7 +8,7 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/:section?',
-    categories: ['politics'],
+    categories: ['traditional-media'],
     example: '/politicsweb',
     parameters: {
         section: {
@@ -62,7 +62,7 @@ export const route: Route = {
                         content.find('script, style, .adsbygoogle, .social-share').remove();
 
                         return {
-                            title: item.title,
+                            title: item.title ?? '',
                             link: item.link,
                             description: content.html() || item.content || item.summary,
                             pubDate: parseDate(item.pubDate),
@@ -70,7 +70,7 @@ export const route: Route = {
                         };
                     } catch {
                         return {
-                            title: item.title,
+                            title: item.title ?? '',
                             link: item.link,
                             description: item.content || item.summary,
                             pubDate: parseDate(item.pubDate),

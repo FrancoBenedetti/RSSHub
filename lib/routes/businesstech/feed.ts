@@ -32,7 +32,7 @@ export const route: Route = {
             link: 'https://businesstech.co.za/news/',
             description: 'Latest tech and business news from BusinessTech South Africa via Google News',
             item: feed.items.map((item) => ({
-                title: item.title,
+                title: item.title ?? '',
                 link: item.link,
                 pubDate: item.pubDate,
                 author: item.creator,

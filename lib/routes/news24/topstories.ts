@@ -33,7 +33,7 @@ export const route: Route = {
             link: 'https://www.news24.com/news24/topstories',
             description: 'Top Stories from News24 South Africa via Google News',
             item: feed.items.map((item) => ({
-                title: item.title,
+                title: item.title ?? '',
                 link: item.link,
                 pubDate: item.pubDate,
                 author: item.creator,

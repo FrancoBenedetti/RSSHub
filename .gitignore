@@ -78,9 +78,8 @@ package-lock.json
 # pnpm-lock.yaml
 yarn.lock
 yarn-error.log
-
 dist-container
 src
 .env.db
 lib/xentara-routes/
-
+scratch/
